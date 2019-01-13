@@ -82,7 +82,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
     #ex.)dropout,batchnormを有効
     model.train()
 
-    #AverageMeterの数初期化
+    #AverageMeterの値初期化
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -116,21 +116,32 @@ def test(args, model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
+
+    #AverageMeterの値初期化
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    end = time.time()#基準の時間更新
     #勾配計算しない(計算量低減)
     with torch.no_grad():
         for data, target in test_loader:
+            data_time.update(time.time() - end)#画像のロード時間記録
             data, target = data.to(device), target.to(device)#gpu使うなら画像とラベルcuda化
             output = model(data)#sofmax前まで出力(forward)
             test_loss += nn.CrossEntropyLoss(size_average=False)(output, target).item()#評価データセットでのloss計算
             pred = output.max(1, keepdim=True)[1]#softmaxでargmax計算
             correct += pred.eq(target.view_as(pred)).sum().item()#バッチ内の正解数計算
+            batch_time.update(time.time() - end)#画像ロードからパラメータ更新にかかった時間記録
+            end = time.time()#基準の時間更新
     #dataset数で割って正解計算
     test_loss /= len(test_loader.dataset)
     #lossとaccuracy計算
-    print("\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
-        test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
-
+    print("\nTest Accuracy: {}/{} ({:.0f}%)\t"
+            "Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
+            "Data {data_time.val:.3f} ({data_time.avg:.3f})\t"
+            "Average Loss: {test_loss:.4f}\t\n".format(
+            correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset), 
+            batch_time=batch_time, data_time=data_time, test_loss=test_loss))
 
 #引数
 def opt():
