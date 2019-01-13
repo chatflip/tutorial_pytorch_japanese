@@ -1,0 +1,2 @@
+tensorflow==1.7.0
+tensorflow-tensorboard==0.1.7
