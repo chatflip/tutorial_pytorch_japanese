@@ -81,12 +81,10 @@ def train(args, model, device, train_loader, optimizer, epoch):
     #ネットワークを学習用に設定
     #ex.)dropout,batchnormを有効
     model.train()
-
     #AverageMeterの値初期化
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
-
     end = time.time()#1回目の読み込み時間計測用
     for batch_idx, (data, target) in enumerate(train_loader):
         data_time.update(time.time() - end)#画像のロード時間記録
@@ -116,7 +114,6 @@ def test(args, model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
-
     #AverageMeterの値初期化
     batch_time = AverageMeter()
     data_time = AverageMeter()
