@@ -65,5 +65,9 @@ target/
 04-detection/log
 05-GAN/log
 
+#torch weight
+*.pth
+*.pth.tar
+
 #for Mac
 *.DS_Store
