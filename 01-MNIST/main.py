@@ -56,23 +56,58 @@ class LeNet(nn.Module):
         x = self.classifier(x)
         return x
 
+#ログ記録用クラス
+class AverageMeter(object):
+    """Computes and stores the average and current value"""
+    def __init__(self):
+        self.reset()
+
+    #初期化
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    #値更新
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
+
 #学習用
 def train(args, model, device, train_loader, optimizer, epoch):
     #ネットワークを学習用に設定
     #ex.)dropout,batchnormを有効
     model.train()
+
+    #AverageMeterの数初期化
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+
+    end = time.time()#1回目の読み込み時間計測用
     for batch_idx, (data, target) in enumerate(train_loader):
+        data_time.update(time.time() - end)#画像のロード時間記録
         data, target = data.to(device), target.to(device)#gpu使うなら画像とラベルcuda化
         optimizer.zero_grad()#勾配初期化
         output = model(data)#sofmax前まで出力(forward)
         loss = nn.CrossEntropyLoss(size_average=True)(output, target)#ネットワークの出力をsoftmax + ラベルとのloss計算
+        losses.update(loss.item(), data.size(0))#lossの値更新
         loss.backward()#勾配計算(backprop)
         optimizer.step()#パラメータ更新
+        batch_time.update(time.time() - end)#画像ロードからパラメータ更新にかかった時間記録
+        end = time.time()#基準の時間更新
         #log_intervalごとに進行具合とloss表示
         if batch_idx % args.log_interval == 0:
-            print("Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+            print("Train Epoch: {0} [{1:5d}/{2:5d} ({3:.0f}%)]\t"
+                "Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
+                "Data {data_time.val:.3f} ({data_time.avg:.3f})\t"
+                "Loss: {loss.val:.4f}".format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item()))
+                100. * batch_idx / len(train_loader) ,
+                batch_time=batch_time, data_time=data_time, loss=losses))
 
 #評価用
 def test(args, model, device, test_loader):
@@ -111,7 +146,7 @@ def opt():
     parser.add_argument("--no-cuda", action="store_true", default=False, help="disables CUDA training")
     parser.add_argument("--num_workers", type=int, default=3, help="num of pallarel threads(dataloader)")
     parser.add_argument("--seed", type=int, default=1, metavar="S", help="random seed (default: 1)")
-    parser.add_argument("--log-interval", type=int, default=10, metavar="N", help="how many batches to wait before logging training status")
+    parser.add_argument("--log-interval", type=int, default=100, metavar="N", help="how many batches to wait before logging training status")
     args = parser.parse_args()
     return args
 
