@@ -39,7 +39,7 @@ def accuracy(output, target, topk=(1,)):
             res.append(correct_k.mul_(100.0 / batch_size))
         return res
 
-def train(args, model, device, train_loader, writer, optimizer, epoch, iteration):
+def train(args, model, device, train_loader, writer, criterion, optimizer, epoch, iteration):
     #ネットワークを学習用に設定
     #ex.)dropout,batchnormを有効
     model.train()
@@ -55,8 +55,8 @@ def train(args, model, device, train_loader, writer, optimizer, epoch, iteration
         data, target = data.to(device), target.to(device)#gpu使うなら画像とラベルcuda化
         optimizer.zero_grad()#勾配初期化
         output = model(data)#sofmaxm前まで出力(forward)
-        loss = nn.CrossEntropyLoss(size_average=True)(output, target)#ネットワークの出力をsoftmax + ラベルとのloss計算
-        acc1, acc3 = accuracy(output, target, topk=(1, 5))#予測した中で1番目と3番目までに正解がある率
+        loss = criterion(output, target)#ネットワークの出力をsoftmax + ラベルとのloss計算
+        acc1, acc3 = accuracy(output, target, topk=(1, 3))#予測した中で1番目と3番目までに正解がある率
         losses.update(loss.item(), data.size(0))
         top1.update(acc1[0], data.size(0))
         top3.update(acc3[0], data.size(0))
@@ -78,7 +78,7 @@ def train(args, model, device, train_loader, writer, optimizer, epoch, iteration
             writer.add_scalars("accuracy",{"train": top1.val}, iteration)
         iteration += 1
 
-def test(args, model, device, test_loader, writer, iteration):
+def test(args, model, device, test_loader, writer, criterion, iteration):
     #ネットワークを評価用に設定
     #ex.)dropout,batchnormを恒等関数に
     model.eval()
@@ -92,17 +92,16 @@ def test(args, model, device, test_loader, writer, iteration):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)#gpu使うなら画像とラベルcuda化
             output = model(data)#sofmaxm前まで出力(forward)#評価データセットでのloss計算
-            loss = nn.CrossEntropyLoss(size_average=False)(output, target) # sum up batch loss
+            loss = criterion(output, target) # sum up batch loss
             losses.update(loss.item(), data.size(0))
-            acc1 = accuracy(output, target)#ラベルと合ってる率を算出
+            acc1,_ = accuracy(output, target, topk=(1,3))#ラベルと合ってる率を算出
             top1.update(acc1[0], data.size(0))
             batch_time.update(time.time() - end)#画像ロードからパラメータ更新にかかった時間記録
             end = time.time()#基準の時間更新
     #test_loss格納
     writer.add_scalars("loss", {"test": losses.avg}, iteration)
     writer.add_scalars("accuracy", {"test":100.*top1.avg}, iteration)
-
-    print('Test Acc@1 {top1.avg:.4f}\t loss {loss.avg:.4f}\t Time {batch_time.ave:.3f}'.format(top1=top1, loss=losses, batch_time=batch_time))
+    print('Test Acc@1 {top1.avg:.4f}\t loss {loss.avg:.4f}\t Time {batch_time.avg:.3f}'.format(top1=top1, loss=losses, batch_time=batch_time))
 
 def opt():
     parser = argparse.ArgumentParser(description="PyTorch AnimeFace")
@@ -163,14 +162,15 @@ if __name__ == "__main__":
     model = alex(pretrained=True, num_classes=args.numof_classes).to(device)#ネットワーク定義 + gpu使うならcuda化
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)#最適化方法定義
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,37], gamma=0.1)#学習率の軽減スケジュール
+    criterion = nn.CrossEntropyLoss().to(device)
     starttime = time.time()#実行時間計測(実時間)
     iteration = 0#反復回数保存用
     #学習と評価
     for epoch in range(1, args.epochs + 1):
         scheduler.step()#epoch 0 スタートだから+1して数値を合わせてスケジューラ開始
-        #train(args, model, device, train_loader, writer, optimizer, epoch, iteration)
+        train(args, model, device, train_loader, writer, criterion, optimizer, epoch, iteration)
         iteration += len(train_loader)#1epoch終わった時のiterationを足す
-        test(args, model, device, test_loader, writer, iteration)
+        test(args, model, device, test_loader, writer, criterion, iteration)
         #重み保存
         if epoch % args.save_interval == 0:
             saved_weight = "{}AnimeFace_alex_{}.pth".format(args.path2weight, epoch)
@@ -180,4 +180,4 @@ if __name__ == "__main__":
     #実行時間表示
     endtime = time.time()
     interval = endtime - starttime
-    print ("elapsed time = {0:d}h {1:d}m {2:d}s".format(interval/3600, (interval%3600)/60, (interval%3600)%60))
+    print ("elapsed time = {0:d}h {1:d}m {2:d}s".format(int(interval/3600), int((interval%3600)/60), int((interval%3600)%60)))

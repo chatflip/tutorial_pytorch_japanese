@@ -190,4 +190,4 @@ if __name__ == "__main__":
     #実行時間表示
     endtime = time.time()
     interval = endtime - starttime
-    print ("elapsed time = %dh %dm %ds" % (int(interval/3600),int((interval%3600)/60),int((interval%3600)%60)))
+    print ("elapsed time = {0:d}h {1:d}m {2:d}s".format(int(interval/3600), int((interval%3600)/60), int((interval%3600)%60)))
