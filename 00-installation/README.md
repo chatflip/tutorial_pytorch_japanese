@@ -3,7 +3,7 @@
 
 ## Usage
 [pytorch導入(仮想環境)](https://qiita.com/chat-flip/items/da974bef7d323c86184d)  
-Qiita参考に(python3系,ubuntu推奨)  
+Qiita参考に(python3系)  
 
 ### anaconda導入
 https://qiita.com/chat-flip/items/e0dfdbdd22937f5576d2
@@ -11,10 +11,9 @@ Qiita参考に(python3系,ubuntu推奨)
 
 ### pytorch導入
 ```
-$ conda create -n pt4 python=3.5.1 -y
-$ source activate pt4
-$ conda install anaconda
-$ conda install -c pytorch pytorch=0.4.0 torchvision=0.2.1 -y
+$ conda create -n pt python=3.5 -y
+$ source activate pt
+$ conda install -c pytorch pytorch=1.0.0 torchvision=0.2.2 -y
 ```
 
 ## Author
