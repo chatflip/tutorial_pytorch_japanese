@@ -59,7 +59,9 @@ target/
 
 #specific folder
 1-classification_mnist/data/*
+1-classification_mnist/log/*
 2-classification_anime/dataset/*
+2-classification_anime/log/*
 
 #torch weight
 *.pth
