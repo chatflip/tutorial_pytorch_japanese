@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 05 23:55:12 2018
-
 @author: okayasu.k
-require pytorch 0.4.0
-        torchvision 0.2.1
+require pytorch 1.4.0
+        torchvision 0.2.2
 """
-
 import torch.nn as nn
 
 
 # ネットワークを別プログラムに定義
 class LeNet(nn.Module):
+    """ LeNET"""
     def __init__(self, num_classes=10):
         super(LeNet, self).__init__()
         self.features = nn.Sequential(

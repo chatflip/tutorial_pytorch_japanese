@@ -2,7 +2,6 @@ classification MNIST
 ====
 手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理
 
-
 ## Description
 ### 使用データセット
 [MNIST](http://yann.lecun.com/exdb/mnist/)
@@ -12,19 +11,15 @@ classification MNIST
 
 ### tensorboardx
 [tensorboardx](https://github.com/lanpa/tensorboard-pytorch)
+$ conda create -n tb python=3.5.0 -y
+$ source activate tb
+$ pip install -r txt/requirements.txt
+$ source deactivate
 
 ## Usage
 ### 学習, 識別
 ```
 $ python main.py
-```
-
-### tensorboard確認用の仮想環境作成
-```
-$ conda create -n tb python=3.5.0 -y
-$ source activate tb
-$ pip install -r txt/requirements.txt
-$ source deactivate
 ```
 
 ### pytorchでlog取るライブラリインストール
