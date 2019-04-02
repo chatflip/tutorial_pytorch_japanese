@@ -5,14 +5,12 @@ pytorch tutorial for japanese
 B3用輪講にでも
 
 ## Description
-[01-MNIST](https://github.com/chatflip/tutorial_pytorch/tree/master/01-MNIST)  
-MNISTでの識別
+[1-classification_mnist](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/1-classification_mnist)  
+手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理
 
-[02-log_plot](https://github.com/chatflip/tutorial_pytorch/tree/master/02-log_plot)  
-loss, accuracyの描画,プログラム分割
+[2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
+実画像のデータセットでの識別
 
-[03-raw_dataset](https://github.com/chatflip/tutorial_pytorch/tree/master/03-raw_dataset)  
-実際の画像のデータセットでの識別
 
 ## Requirement
 mac or ubuntu
