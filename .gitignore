@@ -58,12 +58,8 @@ docs/_build/
 target/
 
 #specific folder
-02-log_plot/log
-02-log_plot/data
-03-raw_dataset/log
-03-raw_dataset/dataset
-04-detection/log
-05-GAN/log
+1-classification_mnist/data/*
+2-classification_anime/dataset/*
 
 #torch weight
 *.pth
