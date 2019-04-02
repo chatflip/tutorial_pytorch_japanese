@@ -1,13 +1,21 @@
-tutorial_pytorch
+tutorial_pytorch for japanese
 ====
 
 研究室(引き継ぎ)用
 B3用輪講にでも
 
-## Description
-[00-installation](https://github.com/chatflip/tutorial_pytorch/tree/master/00-installation)  
-pytorchインストール方法
+## installation
+### anaconda導入
+https://www.anaconda.com/distribution/
 
+### pytorch導入(仮想環境)
+```
+$ conda create -n pt python=3.5 -y
+$ source activate pt
+$ conda install -c pytorch pytorch=1.0.0 torchvision=0.2.2 -y
+```
+
+## Description
 [01-MNIST](https://github.com/chatflip/tutorial_pytorch/tree/master/01-MNIST)  
 MNISTでの識別
 
