@@ -1,6 +1,5 @@
 import torchvision
 import torch.nn as nn
-import torch.utils.model_zoo as model_zoo
 
 
 class AlexNet(nn.Module):
@@ -55,10 +54,10 @@ def alex(pretrained=False, **kwargs):
     """
     model = AlexNet(**kwargs)
     if pretrained:
-        model_zoo = torchvision.models.alexnet(pretrained=True)
-        model.features = model_zoo.features
-        model.classifier[1].weight = model_zoo.classifier[1].weight
-        model.classifier[1].bias = model_zoo.classifier[1].bias
-        model.classifier[4].weight = model_zoo.classifier[4].weight
-        model.classifier[4].bias = model_zoo.classifier[4].bias
+        model_zoo_param = torchvision.models.alexnet(pretrained=True)
+        model.features = model_zoo_param.features
+        model.classifier[1].weight = model_zoo_param.classifier[1].weight
+        model.classifier[1].bias = model_zoo_param.classifier[1].bias
+        model.classifier[4].weight = model_zoo_param.classifier[4].weight
+        model.classifier[4].bias = model_zoo_param.classifier[4].bias
     return model

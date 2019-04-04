@@ -1,4 +1,4 @@
-03-raw_dataset
+classification　anime
 ====
 アニメのキャラクターの顔を集めたデータセットを用いた識別
 
@@ -22,6 +22,9 @@ $ bash scripts/download.sh
 
 ### 実行
 ```
+# ダウンロード，フォルダ構成
+$ python py/preprocess.py
+# 学習，識別
 $ python py/main.py
 ```
 
