@@ -29,6 +29,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
+
 # code from https://www.kaggle.com/bminixhofer/
 #           deterministic-neural-networks-using-pytorch
 def seed_everything(seed=1234):
@@ -38,3 +39,6 @@ def seed_everything(seed=1234):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
+    def worker_init_fn(worker_id):
+        random.seed(worker_id + seed)
+    return worker_init_fn

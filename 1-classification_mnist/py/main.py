@@ -32,7 +32,7 @@ def train(args, model, device, train_loader,
         data, target = data.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
         optimizer.zero_grad()  # 勾配初期化
         output = model(data)  # sofmaxm前まで出力(forward)
-        loss = nn.CrossEntropyLoss(size_average=True)(output, target)  # ネットワークの出力をsoftmax + ラベルとのloss計算
+        loss = nn.CrossEntropyLoss(reduction='mean')(output, target)  # ネットワークの出力をsoftmax + ラベルとのloss計算
         losses.update(loss.item(), data.size(0))  # ossの値更新
         loss.backward()  # 勾配計算(backprop)
         optimizer.step()  # パラメータ更新
@@ -67,7 +67,7 @@ def test(args, model, device, test_loader, writer, iteration):
             data_time.update(time.time() - end)  # 画像のロード時間記録
             data, target = data.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
             output = model(data)  # sofmaxm前まで出力(forward)
-            test_loss += nn.CrossEntropyLoss(size_average=False)(output, target).item()  # 評価データセットでのloss計算
+            test_loss += nn.CrossEntropyLoss(reduction='sum')(output, target).item()  # 評価データセットでのloss計算
             pred = output.max(1, keepdim=True)[1]  # softmaxでargmax計算
             correct += pred.eq(target.view_as(pred)).sum().item()  # バッチ内の正解数計算
             batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
@@ -116,7 +116,7 @@ def opt():
 
 if __name__ == '__main__':
     args = opt()
-    seed_everything(args.seed)# 乱数テーブル固定
+    worker_init = seed_everything(args.seed)# 乱数テーブル固定
     use_cuda = not args.no_cuda and torch.cuda.is_available()  # gpu使えるか and 使うか
     device = torch.device('cuda' if use_cuda else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
@@ -133,13 +133,15 @@ if __name__ == '__main__':
         'data', train=True, download=True, transform=transform)
     train_loader = torch.utils.data.DataLoader(
         train_MNIST, batch_size=args.batch_size, shuffle=True,
-        num_workers=args.num_workers, pin_memory=True)
+        num_workers=args.num_workers, pin_memory=True,
+        worker_init_fn=worker_init)
     # MNISTの評価用データ設定
     test_MNIST = datasets.MNIST(
         'data', train=False, transform=transform)
     test_loader = torch.utils.data.DataLoader(
         test_MNIST, batch_size=args.test_batch_size, shuffle=True,
-        num_workers=args.num_workers, pin_memory=True)
+        num_workers=args.num_workers, pin_memory=True,
+        worker_init_fn=worker_init)
     model = LeNet().to(device)  # ネットワーク定義 + gpu使うならcuda化
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義

@@ -26,16 +26,17 @@ http://localhost:(port番号)/#scalars
 accuracy 99.0% 
 ### on cpu
 OS: macOS Mojave
-プロセッサ 2.5 GHz Intel Core i7  
-elapsed time 0h 1m 58s  
+プロセッサ  Intel Core i7 2.5 GHz
+Accuracy 98.9%  
+Elapsed time 0h 1m 58s  
 ### on gpu
 OS: Ubuntu 16.04  
-プロセッサ Intel® Core™ i9-9900K CPU @ 3.60GHz × 16  
+プロセッサ Intel Core i9 3.6GHz  
 グラフィック GeForce RTX 2080 Ti  
 cuda 10.0  
 cudnn 7.5  
-accuracy 99.0%  
-elapsed time 0h 1m 16s  
+Accuracy 98.7%  
+Elapsed time 0h 1m 20s  
 
 ## 参考文献
 [1] Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner, "Gradient-Based Learning Applied to Document Recognition," Proceedings of the IEEE, november, 1998.
