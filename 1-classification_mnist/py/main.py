@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import argparse
-import os
-import random
 import time
 
 import torch
@@ -74,10 +72,9 @@ def test(args, model, device, test_loader, writer, iteration):
             end = time.time()  # 基準の時間更新
     test_loss /= len(test_loader.dataset)  # dataset数で割って正解計算
     # test_loss格納
-    writer.add_scalars('loss',
-                       {'test': test_loss}, iteration)
-    writer.add_scalars('accuracy',
-                       {'test': 100. * correct / len(test_loader.dataset)}, iteration)
+    writer.add_scalars('loss', {'test': test_loss}, iteration)
+    writer.add_scalars('accuracy', {'test': 100. * correct / len(test_loader.dataset)},
+                       iteration)
     print('\nTest Accuracy: {}/{} ({:.2f}%)\t'
           'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
           'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
@@ -93,7 +90,8 @@ def opt():
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
-                        help='input batch size for testing (default: 1000)')
+                        help='input batch size for testing'
+                             '(default: 1000)')
     parser.add_argument('--epochs', type=int, default=10, metavar='N',
                         help='number of epochs to train (default: 10)')
     # network parameters
@@ -109,14 +107,15 @@ def opt():
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=100, metavar='N',
-                        help='how many batches to wait before logging training status')
+                        help='how many batches to wait before logging'
+                             'training status')
     args = parser.parse_args()
     return args
 
 
 if __name__ == '__main__':
     args = opt()
-    worker_init = seed_everything(args.seed)# 乱数テーブル固定
+    worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     use_cuda = not args.no_cuda and torch.cuda.is_available()  # gpu使えるか and 使うか
     device = torch.device('cuda' if use_cuda else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
