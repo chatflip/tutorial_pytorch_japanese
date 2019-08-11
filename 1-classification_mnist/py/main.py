@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
-'''
-Created on Sat Aug 05 23:55:12 2018
-
-@author: okayasu.k
-require pytorch 0.4.0
-        torchvision 0.2.1
-'''
-
 from __future__ import print_function
 import argparse
 import time
 
-from tensorboardX import SummaryWriter
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
+from torch.utils.tensorboard import SummaryWriter
 from torchvision import datasets
 from torchvision import transforms
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-@author: okayasu.k
-require pytorch 1.4.0
-        torchvision 0.2.2
-"""
 import torch.nn as nn
 
 
