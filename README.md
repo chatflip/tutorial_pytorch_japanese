@@ -1,8 +1,7 @@
 pytorch tutorial for japanese
 ====
 
-研究室(引き継ぎ)用
-B3用輪講にでも
+昔の自分を確認する用
 
 ## Description
 [1-classification_mnist](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/1-classification_mnist)  
@@ -11,20 +10,20 @@ B3用輪講にでも
 [2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
 実画像のデータセットでの識別
 
-
 ## Requirement
-mac or ubuntu
+Mac or Ubuntu
 
-## installation
+## Installation
 ### anaconda導入
-https://www.anaconda.com/distribution/
-python3.7をダウンロード/インストール
+最新バージョンを使う場合[ここ](https://www.anaconda.com/distribution/)からダウンロード, インストール
+実行時の環境は[ここ](https://repo.continuum.io/archive/)から```Anaconda3-5.2.0-MacOSX-x86_64.sh```をダウンロード, インストール
 
 ### pytorch導入(仮想環境)
 ```
-$ conda create -n pt python=3.5 -y
-$ source activate pt
-$ conda install -c pytorch pytorch=1.0.0 torchvision=0.2.2 -y
+$ conda create -n tutorial python=3.6 -y
+$ source activate tutorial
+$ conda install -c pytorch pytorch=1.2.0 torchvision=0.3.0 -y
+$ pip install tb-nightly
 ```
 
 ## Author
