@@ -6,7 +6,6 @@ import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import datasets
 from torchvision import transforms
