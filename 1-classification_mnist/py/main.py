@@ -78,7 +78,7 @@ def test(args, model, device, test_loader, writer, iteration):
                        {'test': test_loss}, iteration)
     writer.add_scalars('accuracy',
                        {'test': 100. * correct / len(test_loader.dataset)}, iteration)
-    print('\nTest Accuracy: {}/{} ({:.0f}%)\t'
+    print('\nTest Accuracy: {}/{} ({:.2f}%)\t'
           'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
           'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
           'Average Loss: {test_loss:.4f}\t\n'.format(
