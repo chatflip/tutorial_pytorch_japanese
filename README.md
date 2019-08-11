@@ -15,7 +15,7 @@ Mac or Ubuntu
 
 ## Installation
 ### anaconda導入
-最新バージョンを使う場合[ここ](https://www.anaconda.com/distribution/)からダウンロード, インストール
+最新バージョンを使う場合[ここ](https://www.anaconda.com/distribution/)からダウンロード, インストール  
 実行時の環境は[ここ](https://repo.continuum.io/archive/)から```Anaconda3-5.2.0-MacOSX-x86_64.sh```をダウンロード, インストール
 
 ### pytorch導入(仮想環境)
