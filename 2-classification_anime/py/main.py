@@ -1,34 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Aug 05 23:55:12 2018
-
-@author: okayasu.k
-require pytorch 0.4.0
-        torchvision 0.2.1
-"""
-
 from __future__ import print_function
 import os
 import time
 
-from tensorboardX import SummaryWriter
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
 from alex import alex
 from args import opt
 from loadDB import AnimeFaceDB
 from train_test import train, test
+from utils import seed_everything
 
 
 if __name__ == "__main__":
     args = opt()
+    worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     # フォルダが存在してなければ作る
     if not os.path.exists(args.path2weight):
         os.mkdir(args.path2weight)
-    torch.manual_seed(args.seed)  # torchとtorchvisionで使う乱数固定
     use_cuda = not args.no_cuda and torch.cuda.is_available()  # gpu使えるか and 使うか
     device = torch.device("cuda" if use_cuda else "cpu")  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir="log/AnimeFace")  # tensorboard用のwriter作成
@@ -53,15 +46,16 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(
         dataset=train_AnimeFace, batch_size=args.batch_size,
         shuffle=True, num_workers=args.num_workers,
-        pin_memory=True, drop_last=True)
+        pin_memory=True, drop_last=True,
+        worker_init_fn=worker_init)
     # AnimeFaceの評価用データ設定
     test_AnimeFace = AnimeFaceDB(
         args.path2db+"test/", transform=test_transform)
     test_loader = torch.utils.data.DataLoader(
         dataset=test_AnimeFace, batch_size=args.batch_size,
         shuffle=False, num_workers=args.num_workers,
-        pin_memory=True, drop_last=False)
-
+        pin_memory=True, drop_last=False,
+        worker_init_fn=worker_init)
     model = alex(pretrained=True, num_classes=args.numof_classes).to(device)  # ネットワーク定義 + gpu使うならcuda化
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-Created on Sat Aug 05 23:55:12 2018
-@author: okayasu.k
-'''
-
 import fnmatch
 import glob
 import os

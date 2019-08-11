@@ -15,38 +15,35 @@ classification　anime
 [2] A. Krizhevsky, et al.: “imageNet Classification with Deep Convolutional Neural Networks,” Advances in Neural Information Processing Systems, 2012.  
 
 ## Usage
-### 画像の準備
-```
-$ bash scripts/download.sh
-```
-
 ### 実行
 ```
 # ダウンロード，フォルダ構成
 $ python py/preprocess.py
 # 学習，識別
 $ python py/main.py
+# ログ確認
+$ tensorboard --logdir=log/AnimeFace
 ```
 
-### 動作環境(確認済み)
-accuracy 86.7%
-<!-- 
-#### on cpu
-OS macOS High Sierra  
-プロセッサ 2.5 GHz Intel Core i7  
-メモリ 8 GB 2133 MHz LPDDR3  
-elapsed time 0h 0m 0s  
--->
+## 動作環境(確認済み)
+### on cpu
+OS: macOS Mojave  
+プロセッサ  Intel Core i7 2.5 GHz  
+Accuracy .%  
+Elapsed time 0h m s  
 
-#### on gpu
+### on gpu
 OS: Ubuntu 16.04  
-プロセッサ Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz  
-グラボ GeForce GTX 1080 × 2  
-cuda 8.0  
-cudnn 5.1  
-elapsed time 0h 10m 3s  
+プロセッサ Intel Core i9 3.6GHz  
+グラフィック GeForce RTX 2080 Ti  
+cuda 10.0  
+cudnn 7.5  
+Accuracy .%  
+Elapsed time 0h m s  
+
+
 
 ## Author
 chatflip
-[[github](https://github.com/chatflip)]
+[[github](https://github.com/chatflip)]  
 [[Qiita](https://qiita.com/chat-flip)]  
