@@ -1,2 +1,0 @@
-tensorflow==1.7.1
-tensorflow-tensorboard==0.1.7

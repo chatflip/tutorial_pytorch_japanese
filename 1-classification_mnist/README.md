@@ -1,6 +1,6 @@
 classification MNIST
 ====
-手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理
+手書き文字(0-9)認識とtensorboardを用いたLoss, Accuracyの管理
 
 ## Description
 ### 使用データセット
@@ -9,31 +9,17 @@ classification MNIST
 ### 使用ネットワーク
 [Lenet](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf)[1]
 
-### tensorboardx
-[tensorboardx](https://github.com/lanpa/tensorboard-pytorch)
-$ conda create -n tb python=3.5.0 -y
-$ source activate tb
-$ pip install -r txt/requirements.txt
-$ source deactivate
-
 ## Usage
 ### 学習, 識別
 ```
 $ python main.py
 ```
 
-### pytorchでlog取るライブラリインストール
-```
-#pytorchの環境で
-$ pip install tensorboardX
-```
-
 ### 実行
 ```
-$ python py/main.py
-$ bash scripts/tensorboard.sh
+$ tensorboard --logdir=./log/MNIST
 #macの場合表示されるURLではなく
-#http://localhost:(port番号)/#scalars
+http://localhost:(port番号)/#scalars
 ```
 
 ## 動作環境(確認済み)
