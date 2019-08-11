@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import argparse
+import os
+import random
 import time
 
 import torch
@@ -12,7 +14,7 @@ from torchvision import datasets
 from torchvision import transforms
 
 from model import LeNet
-from utils import AverageMeter
+from utils import AverageMeter, seed_everything
 
 
 def train(args, model, device, train_loader,
@@ -114,7 +116,7 @@ def opt():
 
 if __name__ == '__main__':
     args = opt()
-    torch.manual_seed(args.seed)  # どこに効いてるか分からないけど乱数テーブル固定
+    seed_everything(args.seed)# 乱数テーブル固定
     use_cuda = not args.no_cuda and torch.cuda.is_available()  # gpu使えるか and 使うか
     device = torch.device('cuda' if use_cuda else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
