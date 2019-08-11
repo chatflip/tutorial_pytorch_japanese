@@ -10,23 +10,20 @@ classification MNIST
 [Lenet](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf)[1]
 
 ## Usage
-### 学習, 識別
-```
-$ python main.py
-```
-
 ### 実行
 ```
+# 学習, 識別
+$ python main.py
+# ログ確認
 $ tensorboard --logdir=./log/MNIST
 #macの場合表示されるURLではなく
 http://localhost:(port番号)/#scalars
 ```
 
 ## 動作環境(確認済み)
-accuracy 99.0% 
 ### on cpu
-OS: macOS Mojave
-プロセッサ  Intel Core i7 2.5 GHz
+OS: macOS Mojave  
+プロセッサ  Intel Core i7 2.5 GHz  
 Accuracy 98.9%  
 Elapsed time 0h 1m 58s  
 ### on gpu
@@ -43,5 +40,5 @@ Elapsed time 0h 1m 20s
 
 ## Author
 chatflip
-[[github](https://github.com/chatflip)]
+[[github](https://github.com/chatflip)]  
 [[Qiita](https://qiita.com/chat-flip)]  
