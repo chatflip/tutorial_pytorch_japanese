@@ -40,5 +40,5 @@ Elapsed time 0h 1m 20s
 
 ## Author
 chatflip
-[[github](https://github.com/chatflip)]  
+[[github](https://github.com/chatflip)]
 [[Qiita](https://qiita.com/chat-flip)]  
