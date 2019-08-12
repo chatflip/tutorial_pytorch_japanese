@@ -1,17 +1,17 @@
-detection voc
+segmentation voc
 ====
-SSDで物体検出
+PSPNetで領域分割
 
 ## Description
 ### 使用データセット
-[Visual Object Classes Challenge 2007](http://host.robots.ox.ac.uk/pascal/VOC/)[1]  
+[Visual Object Classes Challenge 2012](http://host.robots.ox.ac.uk/pascal/VOC/)[1]  
 
 ### 使用ネットワーク
-[SSD-300](https://arxiv.org/abs/1512.02325)[2]  
+[PSPNet](https://arxiv.org/abs/1512.02325)[2]  
 
 ### 参考文献
 [1] Mark Everingham, "The PASCAL Visual Object Classes Challenge: A Retrospective," International Journal of Computer Vision, Vol. 111, pp. 98-136, 2015.  
-[2] Wei Liu, et al.: "SSD: Single Shot MultiBox Detector," European Conference on Computer Vision, 2016.  
+[2] Hengshuang Zhao, et al.: "Pyramid Scene Parsing Network," Pattern Recognition and Computer Vision, 2017.  
 
 ## Usage
 ### 実行
