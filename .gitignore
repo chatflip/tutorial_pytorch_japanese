@@ -62,6 +62,8 @@ target/
 1-classification_mnist/log/*
 2-classification_anime/data/*
 2-classification_anime/log/*
+3-detection_voc/data/*
+3-detection_voc/log/*
 
 #torch weight
 *.pth
