@@ -39,8 +39,8 @@ def exist_mkdir(path):
 
 
 if __name__ == '__main__':
-    baseurl = 'http://host.robots.ox.ac.uk/pascal/VOC/voc2007/'
-    compressd_file = 'VOCtrainval_06-Nov-2007.tar'
+    baseurl = 'http://host.robots.ox.ac.uk/pascal/VOC/voc2012/'
+    compressd_file = 'VOCtrainval_11-May-2012.tar'
     raw_path = 'data'
     exist_mkdir(raw_path)
     download_file(baseurl, compressd_file, raw_path)
