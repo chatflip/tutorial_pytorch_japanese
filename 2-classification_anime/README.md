@@ -26,12 +26,6 @@ $ tensorboard --logdir=log/AnimeFace
 ```
 
 ## 動作環境(確認済み)
-### on cpu
-OS: macOS Mojave  
-プロセッサ  Intel Core i7 2.5 GHz  
-Accuracy .%  
-Elapsed time 0h m s  
-
 ### on gpu
 OS: Ubuntu 16.04  
 プロセッサ Intel Core i9 3.6GHz  
