@@ -26,16 +26,13 @@ $ tensorboard --logdir=log/AnimeFace
 ```
 
 ## 動作環境(確認済み)
-### on gpu
 OS: Ubuntu 16.04  
 プロセッサ Intel Core i9 3.6GHz  
 グラフィック GeForce RTX 2080 Ti  
 cuda 10.0  
 cudnn 7.5  
-Accuracy .%  
-Elapsed time 0h m s  
-
-
+Accuracy 86.3%  
+Elapsed time 0h 11m 22s  
 
 ## Author
 chatflip
