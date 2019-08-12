@@ -5,16 +5,16 @@ pytorch tutorial for japanese
 
 ## Description
 [1-classification_mnist](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/1-classification_mnist)  
-手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理
+手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理  
 
 [2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
-pytorchのデータセットを使わない画像識別
+pytorchのデータセットを使わない画像識別  
 
-[3-detection_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-detection_voc)
-SSDを用いた物体検出
+[3-detection_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-detection_voc)  
+SSDを用いた物体検出  
 
-[4-segmentation_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-segmentation_voc)
-PSPNetを用いた領域分割
+[4-segmentation_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-segmentation_voc)  
+PSPNetを用いた領域分割  
 
 
 ## Requirement
