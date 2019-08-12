@@ -5,7 +5,7 @@ pytorch tutorial for japanese
 
 ## Description
 [1-classification_mnist](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/1-classification_mnist)  
-手書き文字(0-9)認識とtensorboardxを用いたloss, accuracyの管理  
+手書き文字(0-9)認識とtensorboardを用いたloss, accuracyの管理  
 
 [2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
 pytorchのデータセットを使わない画像識別  
