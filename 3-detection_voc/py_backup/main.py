@@ -9,9 +9,9 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
+from alex import alex
 from args import opt
 from loadDB import AnimeFaceDB
-from model import alex
 from train_test import train, test
 from utils import seed_everything
 

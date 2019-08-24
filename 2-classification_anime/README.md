@@ -26,24 +26,22 @@ $ tensorboard --logdir=log/AnimeFace
 ```
 
 ## 動作環境(確認済み)
-### on cpu
-OS: macOS Mojave  
-プロセッサ  Intel Core i7 2.5 GHz  
-Accuracy .%  
-Elapsed time 0h m s  
-
-### on gpu
 OS: Ubuntu 16.04  
 プロセッサ Intel Core i9 3.6GHz  
 グラフィック GeForce RTX 2080 Ti  
 cuda 10.0  
 cudnn 7.5  
+<<<<<<< HEAD
 Top1 Accuracy 98.0%  
 Elapsed time 0h 11m 3s  
 
 
+=======
+Accuracy 86.3%  
+Elapsed time 0h 11m 22s  
+>>>>>>> 7e851f5cf873eaeb1dcfaf6692cb591333f37418
 
 ## Author
 chatflip
-[[github](https://github.com/chatflip)]  
+[[github](https://github.com/chatflip)]
 [[Qiita](https://qiita.com/chat-flip)]  
