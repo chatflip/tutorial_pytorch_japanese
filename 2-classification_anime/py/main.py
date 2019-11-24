@@ -77,8 +77,8 @@ if __name__ == '__main__':
     starttime = time.time()  # 実行時間計測(実時間)
     # 学習と評価
     for epoch in range(1, args.epochs + 1):
-        train(args, model, device, train_loader, writer, criterion,
-              optimizer, epoch, iteration)
+        train(args, model, device, train_loader, writer,
+              criterion, optimizer, epoch, iteration)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         validate(args, model, device, val_loader, criterion, writer, iteration)
         # 重み保存
