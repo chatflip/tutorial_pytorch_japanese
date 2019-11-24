@@ -71,8 +71,7 @@ if __name__ == '__main__':
     iteration = 0  # 反復回数保存用
 
     if args.evaluate:
-        validate(args, model, device, val_loader, criterion,
-                 optimizer, writer, 0, iteration)
+        validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
     starttime = time.time()  # 実行時間計測(実時間)
@@ -81,8 +80,7 @@ if __name__ == '__main__':
         train(args, model, device, train_loader, writer, criterion,
               optimizer, epoch, iteration)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
-        validate(args, model, device, val_loader, criterion,
-                 optimizer, writer, epoch, iteration)
+        validate(args, model, device, val_loader, criterion, writer, iteration)
         # 重み保存
         if epoch % args.save_freq == 0:
             saved_weight = '{}/AnimeFace_alex_{}.pth'.format(

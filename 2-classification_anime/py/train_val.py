@@ -6,8 +6,8 @@ import torch
 from utils import AverageMeter, ProgressMeter, accuracy
 
 
-def train(args, model, device, train_loader, criterion,
-          optimizer, writer, epoch, iteration):
+def train(args, model, device, train_loader, writer, criterion,
+          optimizer, epoch, iteration):
 
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
@@ -53,8 +53,9 @@ def train(args, model, device, train_loader, criterion,
         iteration += 1
 
 
-def validate(args, model, device, val_loader, criterion,
-             optimizer, writer, epoch, iteration):
+
+def validate(args, model, device, val_loader,
+             criterion, writer, iteration):
 
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
