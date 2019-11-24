@@ -64,7 +64,8 @@ target/
 2-classification_anime/log/*
 3-detection_voc/data/*
 3-detection_voc/log/*
-
+4-segmentation_voc/data/*
+4-segmentation_voc/log/*
 #torch weight
 *.pth
 *.pth.tar
