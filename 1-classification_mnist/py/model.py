@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import torch
 import torch.nn as nn
 
 
 # ネットワークを別プログラムに定義
 class LeNet(nn.Module):
-    """ LeNET"""
+    """ LeNET """
     def __init__(self, num_classes=10):
         super(LeNet, self).__init__()
         self.features = nn.Sequential(
@@ -38,6 +39,6 @@ class LeNet(nn.Module):
     def forward(self, x):
         x = self.features(x)
         # B, 16, 5, 5 → 16×5×5
-        x = x.view(x.size(0), 16 * 5 * 5)
+        x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
