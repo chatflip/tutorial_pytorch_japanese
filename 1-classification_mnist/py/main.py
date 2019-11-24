@@ -25,7 +25,7 @@ def train(args, model, device, train_loader, criterion,
     top5 = AverageMeter('Acc@5', ':6.2f')
     progress = ProgressMeter(
         len(train_loader),
-        [batch_time, data_time, losses, top1, top5],
+        [batch_time, losses, top1, top5],
         prefix="Epoch: [{}]".format(epoch))
 
     # ネットワークを学習用に設定
