@@ -14,7 +14,7 @@ from PIL import Image
 def subset(src, dst):
     exist_mkdir(dst)
     exist_mkdir(os.path.join(dst, 'train'))
-    exist_mkdir(os.path.join(dst, 'test'))
+    exist_mkdir(os.path.join(dst, 'val'))
     train_rate = 0.75
     class_names = os.listdir(src)
     class_names.sort()
@@ -30,14 +30,14 @@ def subset(src, dst):
             print(class_name)
             random.shuffle(img_names)
             exist_mkdir(os.path.join(dst, 'train', class_name))
-            exist_mkdir(os.path.join(dst, 'test', class_name))
+            exist_mkdir(os.path.join(dst, 'val', class_name))
             for i, img_name in enumerate(img_names):
                 img = Image.open(img_name)
                 name = os.path.basename(img_name)
                 if i < class_length * train_rate:
                     img.save(os.path.join(dst, 'train', class_name, name))
                 else:
-                    img.save(os.path.join(dst, 'test', class_name, name))
+                    img.save(os.path.join(dst, 'val', class_name, name))
                 img.close()
 
 

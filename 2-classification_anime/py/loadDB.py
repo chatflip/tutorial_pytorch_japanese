@@ -15,7 +15,7 @@ class AnimeFaceDB(Dataset):
         class_names = os.listdir(root)
         class_names.sort()  # クラスをアルファベット順にソート
         for (i, x) in enumerate(class_names):
-            temp = glob.glob(root+x+"/*")
+            temp = glob.glob('{}/{}/*'.format(root, x))
             temp.sort()
             self.image_labels.extend([i]*len(temp))
             self.image_paths.extend(temp)
