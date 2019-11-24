@@ -36,17 +36,22 @@ def train(args, model, device, train_loader,
     top1 = AverageMeter()
     top3 = AverageMeter()
     end = time.time()  # 1回目の読み込み時間計測用
-    for i, (data, target) in enumerate(train_loader):
+    for i, (data, targets) in enumerate(train_loader):
+        print(data.shape)
+        print(targets.shape)
         data_time.update(time.time() - end)  # 画像のロード時間記録
-        data, target = data.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
+        data, targets = data.to(device), targets.to(device)  # gpu使うなら画像とラベルcuda化
         optimizer.zero_grad()  # 勾配初期化
         output = model(data)  # sofmaxm前まで出力(forward)
-        loss = criterion(output, target)  # ネットワークの出力をsoftmax + ラベルとのloss計算
-        acc1, acc3 = accuracy(output, target, topk=(1, 3))  # 予測した中で1番目と3番目までに正解がある率
+        print(output)
+
+        # 損失の計算
+        loss_l, loss_c = criterion(outputs, targets)
+        loss = loss_l + loss_c
+        loss.backward()
+        nn.utils.clip_grad_value_(model.parameters(), clip_value=2.0)
+        #acc1, acc3 = accuracy(output, target, topk=(1, 3))  # 予測した中で1番目と3番目までに正解がある率
         losses.update(loss.item(), data.size(0))
-        top1.update(acc1[0], data.size(0))
-        top3.update(acc3[0], data.size(0))
-        loss.backward()  # 勾配計算(backprop)
         optimizer.step()  # パラメータ更新
         batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
         end = time.time()  # 基準の時間更新

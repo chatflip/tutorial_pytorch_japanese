@@ -1,12 +1,37 @@
 # -*- coding: utf-8 -*-
-import glob
 import os
 
 from PIL import Image
 from torch.utils.data import Dataset
 
 
-class AnimeFaceDB(Dataset):
+class VOCdetectionDB(Dataset):
+    # 初期化
+    def __init__(self, root, phase, transform=None):
+        self.phase = phase
+        self.transform = transform  # 画像変形用
+        self.img_paths, self.ann_paths = split_trainval(root, phase)
+        print(len(self.img_paths))
+    # データセットの画像数宣言(これが無いとエラー)
+    def __len__(self):
+        return len(self.img_paths)
+
+# txtファイルからアノテーション情報を取り出す
+def split_trainval(root, phase):
+    id_txt = os.path.join(root, 'ImageSets', 'Main', phase+'.txt')
+    imgs = []
+    anns = []
+    with open(id_txt, 'r') as f:
+        file_ids = [i.replace('\n', '') for i in f.readlines()]
+        for file_id in file_ids:
+            imgs.append(os.path.join(root, 'JPEGImages', file_id+'.jpg'))
+            anns.append(os.path.join(root, 'Annotations', file_id+'.xml'))
+    return imgs, anns
+
+def parse_xml(anns):
+    return 
+
+"""
     # 初期化
     def __init__(self, root, transform=None):
         self.transform = transform  # 画像変形用
@@ -31,3 +56,4 @@ class AnimeFaceDB(Dataset):
     # データセットの画像数宣言(これが無いとエラー)
     def __len__(self):
         return len(self.image_paths)
+"""
