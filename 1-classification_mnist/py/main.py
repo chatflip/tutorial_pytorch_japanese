@@ -57,6 +57,7 @@ def train(args, model, device, train_loader, criterion,
         if i % args.print_freq == 0:
             progress.display(i)
             writer.add_scalars('loss', {'train': losses.val}, iteration)
+            writer.add_scalars('accuracy', {'train': top1.val}, iteration)
         iteration += 1
 
 
@@ -71,7 +72,7 @@ def validate(args, model, device, val_loader, criterion,
     progress = ProgressMeter(
         len(val_loader),
         [batch_time, losses, top1, top5],
-        prefix='Test: ')
+        prefix='Validate: ')
 
     # ネットワークを評価用に設定
     # ex.)dropout,batchnormを恒等関数に
@@ -98,8 +99,8 @@ def validate(args, model, device, val_loader, criterion,
 
     # 精度等格納
     progress.display(i + 1)
-    writer.add_scalars('loss', {'test': losses.avg}, iteration)
-    writer.add_scalars('accuracy', {'test': top1.avg}, iteration)
+    writer.add_scalars('loss', {'val': losses.avg}, iteration)
+    writer.add_scalars('accuracy', {'val': top1.avg}, iteration)
 
 
 def opt():
@@ -119,7 +120,7 @@ def opt():
     # etc
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
-    parser.add_argument('--workers', type=int, default=3,
+    parser.add_argument('--workers', type=int, default=4,
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for initializing training. ')
@@ -138,7 +139,7 @@ if __name__ == '__main__':
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     transform = transforms.Compose([
-                transforms.Resize((32, 32), interpolation=2),  # リサイズ
+                transforms.Resize((32), interpolation=2),  # リサイズ
                 transforms.ToTensor(),  # テンソル化
                 transforms.Normalize((0.1307,), (0.3081,))  # 標準化
                 ])
@@ -164,7 +165,8 @@ if __name__ == '__main__':
     iteration = 0  # 反復回数保存用
 
     if args.evaluate:
-        validate(args, model, device, val_loader, criterion, optimizer, writer, iteration)
+        validate(args, model, device, val_loader, criterion,
+                 optimizer, writer, 0, iteration)
         sys.exit()
 
     starttime = time.time()  # 実行時間計測(実時間)
