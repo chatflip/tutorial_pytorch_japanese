@@ -70,7 +70,6 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss().to(device)
     iteration = 0  # 反復回数保存用
 
-
     if args.evaluate:
         validate(args, model, device, val_loader, criterion,
                  optimizer, writer, 0, iteration)
