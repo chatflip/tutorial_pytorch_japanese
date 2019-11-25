@@ -23,8 +23,7 @@ if __name__ == '__main__':
     # フォルダが存在してなければ作る
     if not os.path.exists(args.path2weight):
         os.mkdir(args.path2weight)
-    use_cuda = torch.cuda.is_available()  # gpu使えるか
-    device = torch.device('cuda' if use_cuda else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
+    device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])

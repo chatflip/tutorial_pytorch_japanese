@@ -133,13 +133,12 @@ def opt():
 if __name__ == '__main__':
     args = opt()
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
-    use_cuda = torch.cuda.is_available()  # gpu使えるか
-    device = torch.device('cuda' if use_cuda else 'cpu')  # cpuとgpu自動選択
+    device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     transform = transforms.Compose([
-                transforms.Resize((32), interpolation=2),  # リサイズ
+                transforms.Resize(32, interpolation=2),  # リサイズ
                 transforms.ToTensor(),  # テンソル化
                 transforms.Normalize((0.1307,), (0.3081,))  # 標準化
                 ])
