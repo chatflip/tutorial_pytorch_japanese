@@ -10,10 +10,13 @@ pytorch tutorial for japanese
 [2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
 pytorchのデータセットを使わない画像識別  
 
-[3-detection_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-detection_voc)  
+[3-quantize_classification](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-quantize_classification)  
+量子化したmodelの学習  
+
+[4-detection_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-detection_voc)  
 SSDを用いた物体検出  
 
-[4-segmentation_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-segmentation_voc)  
+[5-segmentation_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/5-segmentation_voc)  
 PSPNetを用いた領域分割  
 
 
