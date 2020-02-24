@@ -29,7 +29,7 @@ Mac or Ubuntu
 ```
 $ conda create -n tutorial python=3.6 -y
 $ source activate tutorial
-$ conda install -c pytorch pytorch=1.3.1 torchvision=0.4.1 -y
+$ conda install -c pytorch pytorch=1.4.0 torchvision=0.5.0 cudatoolkit=10.1 -y
 $ pip install tb-nightly
 ```
 
