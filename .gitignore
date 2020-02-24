@@ -58,14 +58,9 @@ docs/_build/
 target/
 
 #specific folder
-1-classification_mnist/data/*
-1-classification_mnist/log/*
-2-classification_anime/data/*
-2-classification_anime/log/*
-3-detection_voc/data/*
-3-detection_voc/log/*
-4-segmentation_voc/data/*
-4-segmentation_voc/log/*
+*/data/*
+*/log/*
+
 #torch weight
 *.pth
 *.pth.tar
