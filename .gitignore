@@ -64,6 +64,7 @@ target/
 # Torch weight
 *.pth
 *.pth.tar
+*.pt
 
 # jupyter notebook
 */.ipynb_checkpoints
