@@ -135,8 +135,8 @@ def opt():
 
 if __name__ == '__main__':
     args = opt()
-    if not os.path.exists(args.path2weight):
-        os.mkdir(args.path2weight)
+    if not os.path.exists('weight'):
+        os.mkdir('weight')
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
