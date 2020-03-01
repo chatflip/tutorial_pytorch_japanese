@@ -143,6 +143,7 @@ def opt():
 
 if __name__ == '__main__':
     args = opt()
+    print(args)
     if not os.path.exists('weight'):
         os.mkdir('weight')
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定

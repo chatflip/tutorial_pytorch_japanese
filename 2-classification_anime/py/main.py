@@ -19,6 +19,7 @@ from utils import seed_everything
 
 if __name__ == '__main__':
     args = opt()
+    print(args)
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
