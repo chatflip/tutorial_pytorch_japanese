@@ -12,7 +12,7 @@ from torchvision import transforms
 
 from args import opt
 from loadDB import AnimeFaceDB
-from model import alex
+from model import resnet18
 from train_val import train, validate
 from utils import seed_everything
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         pin_memory=True, drop_last=False,
         worker_init_fn=worker_init)
 
-    model = alex(pretrained=True, num_classes=args.numof_classes).to(device)  # ネットワーク定義 + gpu使うならcuda化
+    model = resnet18(pretrained=True, num_classes=args.num_classes).to(device)  # ネットワーク定義 + gpu使うならcuda化
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
     scheduler = optim.lr_scheduler.MultiStepLR(
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         is_best = acc > best_acc
         best_acc1 = max(acc, best_acc)
         if is_best:
-            saved_weight = 'weight/AnimeFace_alex_best.pth'
+            saved_weight = 'weight/AnimeFace_resnet18_best.pth'
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 

@@ -13,7 +13,7 @@ def opt():
                         help='mini-batch size in validate')
     parser.add_argument('--epochs', type=int, default=100,
                         help='number of total epochs to run')
-    parser.add_argument('--numof_classes', type=int, default=176,
+    parser.add_argument('--num_classes', type=int, default=176,
                         help='num of classes')
 
     # network parameters
@@ -34,7 +34,7 @@ def opt():
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for initializing training. ')
-    parser.add_argument('--print-freq', type=int, default=100,
+    parser.add_argument('--print-freq', type=int, default=10,
                         help='print frequency (default: 10)')
 
     args = parser.parse_args()
