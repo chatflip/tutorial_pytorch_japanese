@@ -21,8 +21,8 @@ if __name__ == '__main__':
     args = opt()
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     # フォルダが存在してなければ作る
-    if not os.path.exists(args.path2weight):
-        os.mkdir(args.path2weight)
+    if not os.path.exists('weight'):
+        os.mkdir('weight')
     device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -63,9 +63,9 @@ if __name__ == '__main__':
 
     model = alex(pretrained=True, num_classes=args.numof_classes).to(device)  # ネットワーク定義 + gpu使うならcuda化
     optimizer = optim.SGD(
-        model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義
+        model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
     scheduler = optim.lr_scheduler.MultiStepLR(
-        optimizer, milestones=[25, 37], gamma=0.1)  # 学習率の軽減スケジュール
+        optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
     criterion = nn.CrossEntropyLoss().to(device)
     iteration = 0  # 反復回数保存用
 
@@ -73,20 +73,23 @@ if __name__ == '__main__':
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
+    best_acc = 0.0
     starttime = time.time()  # 実行時間計測(実時間)
     # 学習と評価
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, writer,
               criterion, optimizer, epoch, iteration)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
-        validate(args, model, device, val_loader, criterion, writer, iteration)
-        # 重み保存
-        if epoch % args.save_freq == 0:
-            saved_weight = '{}/AnimeFace_alex_{}.pth'.format(
-                args.path2weight, epoch)
+        acc = validate(args, model, device, val_loader, criterion, writer, iteration)
+        scheduler.step()  # 学習率のスケジューリング更新
+
+        is_best = acc > best_acc
+        best_acc1 = max(acc, best_acc)
+        if is_best:
+            saved_weight = 'weight/AnimeFace_alex_best.pth'
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
-        scheduler.step()  # 学習率のスケジューリング更新
+
     writer.close()  # tensorboard用のwriter閉じる
     # 実行時間表示
     endtime = time.time()

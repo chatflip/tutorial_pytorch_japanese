@@ -94,3 +94,4 @@ def validate(args, model, device, val_loader,
     progress.display(i + 1)
     writer.add_scalars('loss', {'val': losses.avg}, iteration)
     writer.add_scalars('accuracy', {'val': top1.avg}, iteration)
+    return top1.avg
