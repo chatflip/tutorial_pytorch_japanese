@@ -24,8 +24,8 @@ http://localhost:(port番号)/#scalars
 ### on cpu
 OS: macOS Mojave  
 プロセッサ  Intel Core i7 2.5 GHz  
-Accuracy 98.9%  
-Elapsed time 0h 1m 58s  
+Accuracy 98.92%  
+elapsed time = 0h 0m 23s  
 ### on gpu
 OS: Ubuntu 16.04  
 プロセッサ Intel Core i9 3.6GHz  
