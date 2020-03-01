@@ -15,6 +15,8 @@ pytorchのデータセットを使わない画像識別
 
 [pruning.ipynb](https://github.com/chatflip/tutorial_pytorch_japanese/blob/master/notebook/pruning.ipynb)  
 1-classification_mnistのmodelの枝刈り  
+[torchscript.ipynb](https://github.com/chatflip/tutorial_pytorch_japanese/blob/master/notebook/torchscript.ipynb)  
+mobilenetv2のmodelのtorchscript変換  
 
 ## Requirement
 Mac or Ubuntu
