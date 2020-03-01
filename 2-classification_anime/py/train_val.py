@@ -17,7 +17,7 @@ def train(args, model, device, train_loader, writer, criterion,
     top5 = AverageMeter('Acc@5', ':6.2f')
     progress = ProgressMeter(
         len(train_loader),
-        [batch_time, losses, top1, top5],
+        [batch_time, data_time, losses, top1, top5],
         prefix="Epoch: [{}]".format(epoch))
 
     # ネットワークを学習用に設定
@@ -59,12 +59,13 @@ def validate(args, model, device, val_loader,
 
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
+    data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':6.5f')
     top1 = AverageMeter('Acc@1', ':6.2f')
     top5 = AverageMeter('Acc@5', ':6.2f')
     progress = ProgressMeter(
         len(val_loader),
-        [batch_time, losses, top1, top5],
+        [batch_time, data_time, losses, top1, top5],
         prefix='Validate: ')
 
     # ネットワークを評価用に設定
@@ -75,6 +76,8 @@ def validate(args, model, device, val_loader,
     with torch.no_grad():
         end = time.time()  # 基準の時間更新
         for i, (images, target) in enumerate(val_loader):
+            data_time.update(time.time() - end)  # 画像のロード時間記録
+
             images, target = images.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
             output = model(images)  # sofmaxm前まで出力(forward)#評価データセットでのloss計算
             loss = criterion(output, target)  # sum up batch loss
