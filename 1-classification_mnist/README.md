@@ -15,7 +15,7 @@ classification MNIST
 # 学習, 識別
 $ python main.py
 # ログ確認
-$ tensorboard --logdir=./log/MNIST
+$ tensorboard --logdir=log/MNIST
 #macの場合表示されるURLではなく
 http://localhost:(port番号)/#scalars
 ```
