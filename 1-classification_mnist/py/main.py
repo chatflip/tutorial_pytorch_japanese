@@ -121,9 +121,13 @@ def opt():
                         help='initial learning rate')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
+    parser.add_argument('--weight_decay', type=float, default=1e-04,
+                        help='weight decay')
     # etc
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
+    parser.add_argument('--resume', type=str, default='weight/MNIST_lenet_10.pth',
+                        help='load weight')
     parser.add_argument('--workers', type=int, default=8,
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
@@ -132,6 +136,7 @@ def opt():
                         help='print frequency (default: 10)')
     parser.add_argument('--save-freq', type=int, default=2,
                         help='save every N epoch')
+
     args = parser.parse_args()
     return args
 
@@ -168,9 +173,18 @@ if __name__ == '__main__':
         worker_init_fn=worker_init)
 
     model = LeNet().to(device)  # ネットワーク定義 + gpu使うならcuda化
+    if args.evaluate:
+        print("use pretrained model : %s" % args.resume)
+        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
+        model.load_state_dict(param)
+
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
-        model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義
+        model.parameters(),
+        lr=args.lr,
+        momentum=args.momentum,
+        weight_decay=args.weight_decay
+    )  # 最適化方法定義
     iteration = 0  # 反復回数保存用
 
     if args.evaluate:
