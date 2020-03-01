@@ -26,6 +26,8 @@ def opt():
     # etc
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
+    parser.add_argument('--resume', type=str, default='weight/AnimeFace_resnet18_best.pth',
+                        help='load weight')
     parser.add_argument('--img_size', type=int, default=256,
                         help='image size')
     parser.add_argument('--crop_size', type=int, default=224,

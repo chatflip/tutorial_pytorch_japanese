@@ -62,13 +62,20 @@ if __name__ == '__main__':
         pin_memory=True, drop_last=False,
         worker_init_fn=worker_init)
 
-    model = resnet18(pretrained=True, num_classes=args.num_classes).to(device)  # ネットワーク定義 + gpu使うならcuda化
+    model = resnet18(pretrained=True, num_classes=args.num_classes)
+    if args.evaluate:
+        print("use pretrained model : %s" % args.resume)
+        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
+        model.load_state_dict(param)
+
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
     scheduler = optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
     criterion = nn.CrossEntropyLoss().to(device)
     iteration = 0  # 反復回数保存用
+
+    model.to(device)  # gpu使うならcuda化
 
     if args.evaluate:
         validate(args, model, device, val_loader, criterion, writer, iteration)

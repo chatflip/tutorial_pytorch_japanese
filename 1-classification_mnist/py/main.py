@@ -173,7 +173,7 @@ if __name__ == '__main__':
         num_workers=args.workers, pin_memory=True,
         worker_init_fn=worker_init)
 
-    model = LeNet().to(device)  # ネットワーク定義 + gpu使うならcuda化
+    model = LeNet()  # ネットワーク定義 + gpu使うならcuda化
     if args.evaluate:
         print("use pretrained model : %s" % args.resume)
         param = torch.load(args.resume, map_location=lambda storage, loc: storage)
@@ -187,6 +187,8 @@ if __name__ == '__main__':
         weight_decay=args.weight_decay
     )  # 最適化方法定義
     iteration = 0  # 反復回数保存用
+
+    model.to(device)  # gpu使うならcuda化
 
     if args.evaluate:
         validate(args, model, device, val_loader, criterion, writer, iteration)
