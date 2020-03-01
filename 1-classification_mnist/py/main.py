@@ -126,6 +126,10 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=100,
                         help='print frequency (default: 10)')
+    parser.add_argument('--print-freq', type=int, default=100,
+                        help='print frequency (default: 10)')
+    parser.add_argument('--save-freq', type=int, default=10,
+                        help='save every N epoch')
     args = parser.parse_args()
     return args
 
@@ -174,6 +178,11 @@ if __name__ == '__main__':
               optimizer, writer, epoch, iteration)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         validate(args, model, device, val_loader, criterion, writer, iteration)
+        if epoch % args.save_freq == 0:
+            saved_weight = 'weight/MNIST_lenet_{}.pth'.format(epoch)
+            torch.save(model.cpu().state_dict(), saved_weight)  # cpuにして保存しないとgpuメモリに若干残る
+            model.to(device)
+
     writer.close()  # tensorboard用のwriter閉じる
     # 実行時間表示
     endtime = time.time()
