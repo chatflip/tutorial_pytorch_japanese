@@ -126,8 +126,6 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=100,
                         help='print frequency (default: 10)')
-    parser.add_argument('--print-freq', type=int, default=100,
-                        help='print frequency (default: 10)')
     parser.add_argument('--save-freq', type=int, default=10,
                         help='save every N epoch')
     args = parser.parse_args()
