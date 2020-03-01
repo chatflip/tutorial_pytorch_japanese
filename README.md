@@ -13,12 +13,8 @@ pytorchのデータセットを使わない画像識別
 [3-quantize_classification](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-quantize_classification)  
 量子化したmodelの学習  
 
-[4-detection_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-detection_voc)  
-SSDを用いた物体検出  
-
-[5-segmentation_voc](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/5-segmentation_voc)  
-PSPNetを用いた領域分割  
-
+[pruning.ipynb](https://github.com/chatflip/tutorial_pytorch_japanese/blob/master/notebook/pruning.ipynb)  
+1-classification_mnistのmodelの枝刈り  
 
 ## Requirement
 Mac or Ubuntu
@@ -34,6 +30,12 @@ $ conda create -n tutorial python=3.6 -y
 $ source activate tutorial
 $ conda install -c pytorch pytorch=1.4.0 torchvision=0.5.0 cudatoolkit=10.1 -y
 $ pip install tb-nightly
+```
+
+### notebook導入
+```
+pip install ipython
+ipython kernel install --user --name=pt14 --display-name=pt14
 ```
 
 ## Author
