@@ -29,8 +29,8 @@ OS: Ubuntu 16.04
 グラフィック GeForce RTX 2080 Ti  
 cuda 10.1  
 cudnn 7.5  
-Top1 Accuracy 98.0%  
-Elapsed time 0h 11m 3s  
+Top1 Accuracy 84.68%  
+Elapsed time 0h 16m 57s  
 
 ## Author
 chatflip

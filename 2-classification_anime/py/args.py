@@ -7,9 +7,9 @@ def opt():
                         help='path to database')
 
     # Train Validate settings
-    parser.add_argument('--batch-size', type=int, default=256,
+    parser.add_argument('--batch-size', type=int, default=128,
                         help='mini-batch size in train')
-    parser.add_argument('--val-batch-size', type=int, default=512,
+    parser.add_argument('--val-batch-size', type=int, default=256,
                         help='mini-batch size in validate')
     parser.add_argument('--epochs', type=int, default=50,
                         help='number of total epochs to run')
@@ -17,7 +17,7 @@ def opt():
                         help='num of classes')
 
     # network parameters
-    parser.add_argument('--lr', type=float, default=0.001,
+    parser.add_argument('--lr', type=float, default=0.01,
                         help='initial learning rate')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
