@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
+import os
 import time
 
 import torch
@@ -120,13 +121,13 @@ def opt():
     # etc
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
-    parser.add_argument('--workers', type=int, default=4,
+    parser.add_argument('--workers', type=int, default=8,
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=100,
                         help='print frequency (default: 10)')
-    parser.add_argument('--save-freq', type=int, default=10,
+    parser.add_argument('--save-freq', type=int, default=2,
                         help='save every N epoch')
     args = parser.parse_args()
     return args
@@ -134,6 +135,8 @@ def opt():
 
 if __name__ == '__main__':
     args = opt()
+    if not os.path.exists(args.path2weight):
+        os.mkdir(args.path2weight)
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
     device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
@@ -177,7 +180,7 @@ if __name__ == '__main__':
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         validate(args, model, device, val_loader, criterion, writer, iteration)
         if epoch % args.save_freq == 0:
-            saved_weight = 'weight/MNIST_lenet_{}.pth'.format(epoch)
+            saved_weight = 'weight/MNIST_lenet_{:02d}.pth'.format(epoch)
             torch.save(model.cpu().state_dict(), saved_weight)  # cpuにして保存しないとgpuメモリに若干残る
             model.to(device)
 
