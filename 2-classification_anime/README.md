@@ -7,12 +7,10 @@ classification　anime
 [AnimeFace Character Dataset](http://www.nurs.or.jp/%7Enagadomi/animeface-character-dataset/README.html)
 
 ### 使用ネットワーク
-[pytorchのalexnet実装](https://arxiv.org/abs/1404.5997)[1]  
-[元のalexnet](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf)[2]  
+[Resnet](https://arxiv.org/abs/1512.03385)[1]  
 
 ### 参考文献
-[1] A. Krizhevsky, "One weird trick for parallelizing convolutional neural networks," arXiv, 2014.  
-[2] A. Krizhevsky, et al.: “imageNet Classification with Deep Convolutional Neural Networks,” Advances in Neural Information Processing Systems, 2012.  
+[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun, "Deep Residual Learning for Image Recognition," CVPR, 2015.  
 
 ## Usage
 ### 実行
