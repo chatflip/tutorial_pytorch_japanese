@@ -57,13 +57,16 @@ docs/_build/
 # PyBuilder
 target/
 
-#specific folder
+# Specific folder
 */data/*
 */log/*
 
-#torch weight
+# Torch weight
 *.pth
 *.pth.tar
+
+# jupyter notebook
+*/.ipynb_checkpoints
 
 *.DS_Store
 .idea
