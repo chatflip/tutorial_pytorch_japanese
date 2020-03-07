@@ -59,6 +59,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss().to(device)
     iteration = 0  # 反復回数保存用
 
+    torch.set_num_threads(1)
     starttime = time.time()  # 実行時間計測(実時間)
     validate(args, model.to(device), device, val_loader, criterion, writer, iteration)
     # 実行時間表示
