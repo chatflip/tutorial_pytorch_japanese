@@ -150,7 +150,7 @@ if __name__ == '__main__':
     if not os.path.exists('weight'):
         os.mkdir('weight')
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
-    device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')  # cpuとgpu自動選択
+    device = torch.device('cuda' if torch.cuda.is_available() and args.no_cuda else 'cpu')  # cpuとgpu自動選択
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
