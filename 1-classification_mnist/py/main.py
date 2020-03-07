@@ -116,6 +116,7 @@ def opt():
                         help='mini-batch size in validate')
     parser.add_argument('--epochs', type=int, default=10,
                         help='number of total epochs to run')
+
     # network parameters
     parser.add_argument('--lr', type=float, default=0.01,
                         help='initial learning rate')
@@ -126,6 +127,8 @@ def opt():
     # etc
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
+    parser.add_argument('--no_cuda',  action='store_true', default=False,
+                        help='no cuda')
     parser.add_argument('--resume', type=str, default='weight/MNIST_lenet_10.pth',
                         help='load weight')
     parser.add_argument('--workers', type=int, default=8,
@@ -147,7 +150,7 @@ if __name__ == '__main__':
     if not os.path.exists('weight'):
         os.mkdir('weight')
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
-    device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択
+    device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')  # cpuとgpu自動選択
     writer = SummaryWriter(log_dir='log/MNIST')  # tensorboard用のwriter作成
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
