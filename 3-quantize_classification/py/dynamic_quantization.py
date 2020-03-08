@@ -29,7 +29,7 @@ if __name__ == '__main__':
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
 
     device = torch.device('cpu')  # cpu only
-    writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
+    writer = SummaryWriter(log_dir='log/AnimeFace/dynamic_quantize')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
