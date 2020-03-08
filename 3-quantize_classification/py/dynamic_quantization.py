@@ -11,7 +11,7 @@ from torchvision import transforms
 from args import opt
 from loadDB import AnimeFaceDB
 from model import mobilenet_v2
-from train_val import train, validate
+from train_val import validate
 from utils import seed_everything
 
 
@@ -60,8 +60,6 @@ if __name__ == '__main__':
     saved_weight = 'weight/AnimeFace_dynamic_quantization_mobilenetv2_epoch100.pth'
     torch.save(quantized_model.state_dict(), saved_weight)
 
-    optimizer = optim.SGD(
-        model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義
     criterion = nn.CrossEntropyLoss()
     iteration = 0  # 反復回数保存用
 
