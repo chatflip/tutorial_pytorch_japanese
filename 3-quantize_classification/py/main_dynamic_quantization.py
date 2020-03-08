@@ -4,13 +4,13 @@ import time
 
 import torch
 import torch.nn as nn
-import torch.optim as optim
+
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
 from args import opt
 from loadDB import AnimeFaceDB
-from float_model import mobilenet_v2
+from model_float import mobilenet_v2
 from train_val import validate
 from utils import seed_everything
 
