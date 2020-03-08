@@ -121,7 +121,7 @@ if __name__ == '__main__':
         scheduler.step()  # 学習率のスケジューリング更新
         # 重み保存
         if epoch % args.save_freq == 0:
-            saved_weight = 'weight/AnimeFace_qat_mobilenetv2_{}.pth'.format(epoch)
+            saved_weight = 'weight/AnimeFace_qat_mobilenetv2_epoch{}.pth'.format(epoch)
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 
