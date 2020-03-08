@@ -29,8 +29,6 @@ def opt():
                         help='momentum')
 
     # etc
-    parser.add_argument('--backend', default='qnnpack',
-                        help='fbgemm or qnnpack')
     parser.add_argument('--evaluate', action='store_true',
                         help='evaluate model on validation set')
     parser.add_argument('--img_size', type=int, default=256,
@@ -43,6 +41,20 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=100,
                         help='print frequency (default: 10)')
+
+    # quantization settings
+    parser.add_argument('--backend', default='qnnpack',
+                        help='fbgemm or qnnpack')
+    parser.add_argument('--num-observer-update-epochs',
+                        default=5, type=int, metavar='N',
+                        help='number of total epochs to update observers')
+    parser.add_argument('--num-batch-norm-update-epochs', default=4,
+                        type=int, metavar='N',
+                        help='number of total epochs to update batch norm stats')
+    parser.add_argument('--num-calibration-batches',
+                        default=32, type=int, metavar='N',
+                        help='number of batches of training set for \
+                              observer calibration ')
 
     args = parser.parse_args()
     return args
