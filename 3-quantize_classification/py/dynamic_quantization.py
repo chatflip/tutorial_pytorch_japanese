@@ -10,7 +10,7 @@ from torchvision import transforms
 
 from args import opt
 from loadDB import AnimeFaceDB
-from model import mobilenet_v2
+from float_model import mobilenet_v2
 from train_val import validate
 from utils import seed_everything
 

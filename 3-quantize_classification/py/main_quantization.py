@@ -12,7 +12,7 @@ from torchvision import transforms
 
 from args import opt
 from loadDB import AnimeFaceDB
-from model_quantization import mobilenet_v2
+from quantize_model import mobilenet_v2
 from train_val import train, validate
 from utils import seed_everything
 
