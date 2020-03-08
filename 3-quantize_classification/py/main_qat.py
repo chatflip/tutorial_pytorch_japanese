@@ -72,7 +72,7 @@ if __name__ == '__main__':
     val_AnimeFace = AnimeFaceDB(
         args.path2db+'/val', transform=val_transform)
     val_loader = torch.utils.data.DataLoader(
-        dataset=val_AnimeFace, batch_size=args.batch_size,
+        dataset=val_AnimeFace, batch_size=args.val_batch_size,
         shuffle=False, num_workers=args.workers,
         pin_memory=False, drop_last=False,
         worker_init_fn=worker_init)
