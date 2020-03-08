@@ -33,6 +33,18 @@ OS: Ubuntu 16.04
 cuda 10.0  
 cudnn 7.5  
 
+## Results
+```
+# float model  
+
+
+# Dynamic quantization model  
+
+
+# Quantization Aware Training model  
+
+```
+
 ## Author
 chatflip
 [[github](https://github.com/chatflip)]
