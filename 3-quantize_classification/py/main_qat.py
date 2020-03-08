@@ -132,11 +132,14 @@ if __name__ == '__main__':
         int((interval % 3600) / 60),
         int((interval % 3600) % 60)))
 
+
     # 量子化モデル
     quantized_model = copy.deepcopy(model.to('cpu'))
     torch.quantization.convert(quantized_model.eval(), inplace=True)  # 量子化
     saved_weight = 'weight/AnimeFace_qat_converted_mobilenetv2.pth'
     torch.save(quantized_model.state_dict(), saved_weight)
+
+    torch.set_num_threads(1)
     validate(args, quantized_model, torch.device('cpu'), val_loader, criterion, writer, iteration)
 
     writer.close()  # tensorboard用のwriter閉じる
