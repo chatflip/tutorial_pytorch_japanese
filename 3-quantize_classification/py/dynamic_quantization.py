@@ -57,7 +57,7 @@ if __name__ == '__main__':
         model, {nn.Linear}, dtype=torch.qint8
     )
 
-    saved_weight = 'weight/AnimeFace_dynamic_quantization_mobilenetv2_100.pth'
+    saved_weight = 'weight/AnimeFace_dynamic_quantization_mobilenetv2_epoch100.pth'
     torch.save(quantized_model.state_dict(), saved_weight)
 
     optimizer = optim.SGD(
