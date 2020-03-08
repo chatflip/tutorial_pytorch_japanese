@@ -60,8 +60,6 @@ target/
 # Specific folder
 */data/*
 */log/*
-!3-quantize_classification/log/main_quantization.txt
-!3-quantize_classification/log/main.txt
 
 # Torch weight
 *.pth
