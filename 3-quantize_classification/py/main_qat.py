@@ -78,7 +78,6 @@ if __name__ == '__main__':
         worker_init_fn=worker_init)
 
     model = mobilenet_v2(pretrained=False, num_classes=args.num_classes, quantize=False)
-    print(model)
     weight_name = "weight/AnimeFace_mobilenetv2_float_epoch100.pth"
     model = load_weight(model, weight_name)
     model.fuse_model()
@@ -136,7 +135,7 @@ if __name__ == '__main__':
     # 量子化モデル
     quantized_model = copy.deepcopy(model.to('cpu'))
     torch.quantization.convert(quantized_model.eval(), inplace=True)  # 量子化
-    saved_weight = 'weight/AnimeFace_quantized_mobilenetv2.pth'
+    saved_weight = 'weight/AnimeFace_qat_converted_mobilenetv2.pth'
     torch.save(quantized_model.state_dict(), saved_weight)
     validate(args, quantized_model, torch.device('cpu'), val_loader, criterion, writer, iteration)
 

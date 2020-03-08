@@ -18,10 +18,12 @@ quantize classification
 ```
 # ダウンロード，フォルダ構成
 $ python py/preprocess.py
-# 学習，識別
-$ python py/main.py
-# ログ確認
-$ tensorboard --logdir=log/quantize_AnimeFace
+# float model training
+$ python py/main_float.py
+# dynamic quantization
+$ python py/dynamic_quantization.py
+# Quantization Aware Training
+$ python py/main_qat.py --epochs=10
 ```
 
 ## 動作環境(確認済み)
