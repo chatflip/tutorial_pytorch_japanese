@@ -36,12 +36,16 @@ cudnn 7.5
 ## Results
 ```
 # float model  
-
+Validate: [ 0/98]       Time  3.709 ( 3.709)    infTime  3.410 ( 3.410) Loss 0.10274 (0.10274)  Acc@1 100.00 (100.00)   Acc@5 100.00 (100.00)
+Validate: [98/98]       Time  0.048 ( 3.156)    infTime  0.044 ( 3.180) Loss 0.10520 (0.15849)  Acc@1 100.00 ( 97.58)   Acc@5 100.00 ( 99.76)
 
 # Dynamic quantization model  
+Validate: [ 0/98]       Time  3.860 ( 3.860)    infTime  3.580 ( 3.580) Loss 0.10271 (0.10271)  Acc@1 100.00 (100.00)   Acc@5 100.00 (100.00)
+Validate: [98/98]       Time  0.051 ( 3.175)    infTime  0.047 ( 3.199) Loss 0.10442 (0.15847)  Acc@1 100.00 ( 97.57)   Acc@5 100.00 ( 99.76)
 
 
 # Quantization Aware Training model  
+python py/main_qat.py --batch-size=32 --epoch=20 --lr=0.00001 --lr-step-size=30 --lr-gamma=0.1  
 
 ```
 
