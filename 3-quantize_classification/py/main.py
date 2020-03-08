@@ -27,7 +27,7 @@ if __name__ == '__main__':
         os.mkdir('weight')
 
     device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
-    writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
+    writer = SummaryWriter(log_dir='log/AnimeFace/float')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         scheduler.step()  # 学習率のスケジューリング更新
         # 重み保存
         if epoch % args.save_freq == 0:
-            saved_weight = 'weight/AnimeFace_mobilenetv2_{}.pth'.format(epoch)
+            saved_weight = 'weight/AnimeFace_mobilenetv2_float_epoch{}.pth'.format(epoch)
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 
