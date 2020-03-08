@@ -80,7 +80,7 @@ def validate(args, model, device, val_loader,
 
             inf_start = time.time()
             output = model(images)  # sofmaxm前まで出力(forward)#評価データセットでのloss計算
-            inf_time.update(time.time() - inf_start)
+            inf_time.update(time.time() - inf_start, images.size(0))
 
             loss = criterion(output, target)  # sum up batch loss
 
