@@ -125,10 +125,13 @@ def mobilenet_v2(pretrained=False, progress=True, quantize=False, num_classes=10
                                               progress=progress)
 
         model.load_state_dict(state_dict)
+
+    if num_classes != 1000:
         model.classifier = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(1280, num_classes),
         )
         nn.init.normal_(model.classifier[1].weight, 0, 0.01)
         nn.init.zeros_(model.classifier[1].bias)
+
     return model

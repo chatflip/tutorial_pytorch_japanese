@@ -176,10 +176,13 @@ def mobilenet_v2(pretrained=False, progress=True, num_classes=1000):
         state_dict = load_state_dict_from_url(model_urls['mobilenet_v2'],
                                               progress=progress)
         model.load_state_dict(state_dict)
+
+    if num_classes != 1000:
         model.classifier = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(1280, num_classes),
         )
         nn.init.normal_(model.classifier[1].weight, 0, 0.01)
         nn.init.zeros_(model.classifier[1].bias)
+
     return model
