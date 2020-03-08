@@ -19,14 +19,16 @@ def opt():
                         help='num of classes')
 
     # network parameters
-    parser.add_argument('--lr', type=float, default=0.00045,
+    parser.add_argument('--lr', type=float, default=0.0045,
                         help='initial learning rate')
-    parser.add_argument('--lr-step-size', default=30, type=int,
+    parser.add_argument('--lr-step-size', default=1, type=int,
                         help='decrease lr every step-size epochs')
-    parser.add_argument('--lr-gamma', default=0.1, type=float,
+    parser.add_argument('--lr-gamma', default=0.98, type=float,
                         help='decrease lr by a factor of lr-gamma')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
+    parser.add_argument('--weight-decay', default=1e-5, type=float,
+                        help='weight decay (default: 1e-5)')
 
     # etc
     parser.add_argument('--evaluate', action='store_true',

@@ -83,7 +83,7 @@ if __name__ == '__main__':
     model.fuse_model()
 
     optimizer = optim.SGD(
-        model.parameters(), lr=args.lr, momentum=args.momentum)  # 最適化方法定義
+        model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
 
