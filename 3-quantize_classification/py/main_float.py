@@ -94,6 +94,9 @@ if __name__ == '__main__':
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 
+    saved_script = 'weight/AnimeFace_mobilenetv2_script_float_epoch{}.pth'.format(args.epochs)
+    torch.jit.save(torch.jit.script(model), saved_script)
+
     writer.close()  # tensorboard用のwriter閉じる
     # 実行時間表示
     endtime = time.time()
