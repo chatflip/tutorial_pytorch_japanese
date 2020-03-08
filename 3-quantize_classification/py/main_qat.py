@@ -17,6 +17,14 @@ from train_val import train, validate
 from utils import seed_everything
 
 
+def load_weight(model, weight_name):
+    assert os.path.isfile(weight_name), "don't exists weight: {}".format(weight_name)
+    print("use pretrained model : %s" % weight_name)
+    param = torch.load(weight_name, map_location=lambda storage, loc: storage)
+    model.load_state_dict(param)
+    return model
+
+
 if __name__ == '__main__':
     args = opt()
     print(args)
@@ -43,6 +51,7 @@ if __name__ == '__main__':
                       transforms.ToTensor(),  # テンソル化
                       normalize  # 標準化
                       ])
+
     val_transform = transforms.Compose([
                      transforms.Resize(args.img_size, interpolation=2),  # リサイズ
                      transforms.CenterCrop(args.crop_size),
@@ -68,9 +77,10 @@ if __name__ == '__main__':
         pin_memory=False, drop_last=False,
         worker_init_fn=worker_init)
 
-    # quantize settings
-    model = mobilenet_v2(
-        pretrained=True, num_classes=args.num_classes, quantize=False).to(device)
+    model = mobilenet_v2(pretrained=False, num_classes=args.num_classes, quantize=False)
+    print(model)
+    weight_name = "weight/AnimeFace_mobilenetv2_float_epoch100.pth"
+    model = load_weight(model, weight_name)
     model.fuse_model()
 
     optimizer = optim.SGD(
@@ -88,7 +98,7 @@ if __name__ == '__main__':
     torch.backends.quantized.engine = args.backend
     model.qconfig = torch.quantization.get_default_qat_qconfig(args.backend)
     torch.quantization.prepare_qat(model, inplace=True)
-    #model.apply(torch.quantization.enable_fake_quant)
+    model.apply(torch.quantization.enable_fake_quant)
     model.apply(torch.quantization.enable_observer)  # observer有効にする
 
     starttime = time.time()  # 実行時間計測(実時間)
@@ -98,6 +108,14 @@ if __name__ == '__main__':
         train(args, model, device, train_loader, writer,
               criterion, optimizer, epoch, iteration)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
+
+        if epoch >= args.num_observer_update_epochs:
+            print('Disabling observer for subseq epochs, epoch = ', epoch)
+            model.apply(torch.quantization.disable_observer)
+        if epoch >= args.num_batch_norm_update_epochs:
+            print('Freezing BN for subseq epochs, epoch = ', epoch)
+            model.apply(torch.nn.intrinsic.qat.freeze_bn_stats)
+
         quantized_model = copy.deepcopy(model.to('cpu'))
         quantized_model.to(device)
         validate(args, quantized_model, device, val_loader, criterion, writer, iteration)
