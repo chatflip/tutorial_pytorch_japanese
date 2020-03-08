@@ -121,9 +121,11 @@ if __name__ == '__main__':
         scheduler.step()  # 学習率のスケジューリング更新
         # 重み保存
         if epoch % args.save_freq == 0:
-            saved_weight = 'weight/AnimeFace_qat_mobilenetv2_epoch{}.pth'.format(epoch)
+            saved_weight = 'weight/AnimeFace_mobilenetv2_qat_epoch{}.pth'.format(epoch)
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
+
+    writer.close()  # tensorboard用のwriter閉じる
 
     endtime = time.time()
     interval = endtime - starttime
@@ -132,20 +134,10 @@ if __name__ == '__main__':
         int((interval % 3600) / 60),
         int((interval % 3600) % 60)))
 
-
     # 量子化モデル
     quantized_model = copy.deepcopy(model.to('cpu'))
     torch.quantization.convert(quantized_model.eval(), inplace=True)  # 量子化
-    saved_weight = 'weight/AnimeFace_qat_converted_mobilenetv2.pth'
+    saved_weight = 'weight/AnimeFace_mobilenetv2_qat_epoch{}.pth'.format(args.epochs)
     torch.save(quantized_model.state_dict(), saved_weight)
-
-    torch.set_num_threads(1)
-    validate(args, quantized_model, torch.device('cpu'), val_loader, criterion, writer, iteration)
-
-    writer.close()  # tensorboard用のwriter閉じる
-    # 実行時間表示
-    endtime = time.time()
-    interval = endtime - starttime
-    print('elapsed time = {0:d}m {1:d}s'.format(
-        int((interval % 3600) / 60),
-        int((interval % 3600) % 60)))
+    saved_script = 'weight/AnimeFace_mobilenetv2_script_qat_epoch{}.pth'.format(args.epochs)
+    torch.jit.save(torch.jit.script(quantized_model), saved_script)
