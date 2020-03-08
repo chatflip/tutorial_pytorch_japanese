@@ -78,9 +78,9 @@ def validate(args, model, device, val_loader,
         for i, (images, target) in enumerate(val_loader):
             images, target = images.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
 
-            inf_start = time.time()
+            inf_start = time.perf_counter()
             output = model(images)  # sofmaxm前まで出力(forward)#評価データセットでのloss計算
-            inf_time.update(time.time() - inf_start, images.size(0))
+            inf_time.update(time.perf_counter() - inf_start, images.size(0))
 
             loss = criterion(output, target)  # sum up batch loss
 
