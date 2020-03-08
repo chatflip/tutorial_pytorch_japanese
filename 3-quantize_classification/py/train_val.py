@@ -59,7 +59,7 @@ def validate(args, model, device, val_loader,
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
     losses = AverageMeter('Loss', ':6.5f')
-    inf_time = AverageMeter('infTime', ':8.5f')
+    inf_time = AverageMeter('infTime', ':6.3f')
 
     top1 = AverageMeter('Acc@1', ':6.2f')
     top5 = AverageMeter('Acc@5', ':6.2f')
@@ -81,6 +81,7 @@ def validate(args, model, device, val_loader,
             inf_start = time.time()
             output = model(images)  # sofmaxm前まで出力(forward)#評価データセットでのloss計算
             inf_time.update(time.time() - inf_start)
+
             loss = criterion(output, target)  # sum up batch loss
 
             # losss, accuracyを計算して更新
