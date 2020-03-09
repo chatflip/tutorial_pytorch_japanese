@@ -94,6 +94,8 @@ if __name__ == '__main__':
             torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 
+    model.to('cpu')
+    model.eval()
     saved_script = 'weight/AnimeFace_mobilenetv2_script_float_epoch{}.pth'.format(args.epochs)
     torch.jit.save(torch.jit.script(model), saved_script)
 
