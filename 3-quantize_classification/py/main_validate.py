@@ -53,19 +53,23 @@ if __name__ == '__main__':
 
     torch.set_num_threads(1)
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_float_epoch100.pth')
-    print('float')
+    print('float model')
+    print_size_of_model(model)
     validate(args, model, device, val_loader, criterion, writer, iteration)
 
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_dynamic_quantization_epoch100.pth')
-    print('dynamic')
+    print('dynamic quantization model')
+    print_size_of_model(model)
     validate(args, model, device, val_loader, criterion, writer, iteration)
 
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_static_quantization_epoch100.pth')
-    print('static')
+    print('dynamic quantization model')
+    print_size_of_model(model)
     validate(args, model, device, val_loader, criterion, writer, iteration)
 
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_qat_epoch20.pth')
-    print('qat')
+    print('quantization aware training model')
+    print_size_of_model(model)
     validate(args, model, device, val_loader, criterion, writer, iteration)
 
     writer.close()  # tensorboard用のwriter閉じる

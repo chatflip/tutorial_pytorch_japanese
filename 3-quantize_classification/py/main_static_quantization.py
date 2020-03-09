@@ -2,6 +2,7 @@
 import copy
 import os
 import time
+import random
 
 import torch
 import torch.nn as nn
@@ -29,7 +30,7 @@ if __name__ == '__main__':
     print(args)
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
+    device = torch.device('cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     writer = SummaryWriter(log_dir='log/AnimeFace/static_quantize')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -43,19 +44,22 @@ if __name__ == '__main__':
                       normalize  # 標準化
                       ])
 
+
     train_AnimeFace = AnimeFaceDB(
         args.path2db+'/train', transform=train_transform)
+    indices = list(range(len(train_AnimeFace)))
+    random.shuffle(indices)
+    indices = indices[:args.batch_size * args.num_calibration_batches]
     subset = torch.utils.data.Subset(
-        train_AnimeFace,
-        indices=list(range(args.val_batch_size * args.num_calibration_batches)))
-
-    calibration_loader = torch.utils.data.DataLoader(
+            train_AnimeFace,
+            indices=indices)
+    train_loader = torch.utils.data.DataLoader(
         dataset=subset, batch_size=args.batch_size,
         shuffle=True, num_workers=args.workers,
         pin_memory=False, drop_last=True,
         worker_init_fn=worker_init)
 
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.CrossEntropyLoss()
 
     model = mobilenet_v2(pretrained=False, num_classes=args.num_classes)
     weight_name = "weight/AnimeFace_mobilenetv2_float_epoch100.pth"
@@ -64,17 +68,14 @@ if __name__ == '__main__':
     quantized_model = copy.deepcopy(model)
     quantized_model.eval()
     quantized_model.fuse_model()
-
     # Specify quantization configuration
     # Start with simple min/max range estimation and per-tensor quantization of weights
-    quantized_model.qconfig = torch.quantization.get_default_qat_qconfig(args.backend)
+    quantized_model.qconfig = torch.quantization.get_default_qconfig(args.backend)
     torch.quantization.prepare(quantized_model, inplace=True)
-    quantized_model.to(device)
 
     iteration = 0
-    validate(args, quantized_model, device, calibration_loader, criterion, writer, iteration)
+    validate(args, quantized_model, device, train_loader, criterion, writer, iteration)
 
-    quantized_model.to('cpu')
     # Convert to quantized model
     torch.quantization.convert(quantized_model, inplace=True)
     saved_weight = 'weight/AnimeFace_mobilenetv2_static_quantization_epoch100.pth'
