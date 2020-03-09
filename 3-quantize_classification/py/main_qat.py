@@ -136,7 +136,8 @@ if __name__ == '__main__':
 
     # 量子化モデル
     quantized_model = copy.deepcopy(model.to('cpu'))
-    torch.quantization.convert(quantized_model.eval(), inplace=True)  # 量子化
+    quantized_model.eval()
+    torch.quantization.convert(quantized_model, inplace=True)  # 量子化
     saved_weight = 'weight/AnimeFace_mobilenetv2_qat_epoch{}.pth'.format(args.epochs)
     torch.save(quantized_model.state_dict(), saved_weight)
     saved_script = 'weight/AnimeFace_mobilenetv2_script_qat_epoch{}.pth'.format(args.epochs)
