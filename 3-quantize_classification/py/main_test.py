@@ -51,6 +51,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     iteration = 0  # 反復回数保存用
 
+    torch.set_num_threads(1)
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_float_epoch100.pth')
     print('float')
     validate(args, model, device, val_loader, criterion, writer, iteration)
