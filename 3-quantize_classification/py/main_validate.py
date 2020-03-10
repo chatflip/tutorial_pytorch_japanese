@@ -17,8 +17,8 @@ from utils import seed_everything
 
 
 def print_size_of_model(model):
-    torch.save(model.state_dict(), "temp.p")
-    print('Size (MB):', os.path.getsize("temp.p")/(1e+4))
+    torch.jit.save(model, "temp.p")
+    print('Size (MB):', os.path.getsize("temp.p")/(1e+6))
     os.remove('temp.p')
 
 
