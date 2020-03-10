@@ -33,16 +33,24 @@ OS: Ubuntu 16.04
 cuda 10.0  
 cudnn 7.5  
 
+
 ## Results
 ```
 # float model  
+Size (MB): 10.485055  
+Validate: [6209/6209]   Time  0.040 ( 0.041)    infTime  0.039 ( 0.040) Loss 0.00039 (0.03600)  Acc@1 100.00 ( 98.92)   Acc@5 100.00 ( 99.92)  
 
 # Dynamic quantization model  
+Size (MB): 9.811573  
+Validate: [6209/6209]   Time  0.040 ( 0.042)    infTime  0.039 ( 0.041) Loss 0.00038 (0.03604)  Acc@1 100.00 ( 98.92)   Acc@5 100.00 ( 99.92)  
 
 # Static quantization model  
+Size (MB): 2.724299  
+Validate: [6209/6209]   Time  0.013 ( 0.013)    infTime  0.012 ( 0.012) Loss 0.00168 (0.05084)  Acc@1 100.00 ( 98.73)   Acc@5 100.00 ( 99.89)  
 
-# Quantization Aware Training model 
-
+# Quantization Aware Training model  
+Size (MB): 2.534283  
+Validate: [6209/6209]   Time  0.011 ( 0.012)    infTime  0.010 ( 0.011) Loss 0.00003 (0.04603)  Acc@1 100.00 ( 98.76)   Acc@5 100.00 ( 99.89)  
 ```
 
 ## Author
