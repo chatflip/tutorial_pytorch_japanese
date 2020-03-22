@@ -77,14 +77,14 @@ if __name__ == '__main__':
         print("use pretrained model : %s" % args.resume)
         param = torch.load(args.resume, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
-        if multigpu:
-            model = nn.DataParallel(model)
+        #if multigpu:
+        #    model = nn.DataParallel(model)
         model.to(device)  # gpu使うならcuda化
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
-    if multigpu:
-        model = nn.DataParallel(model)
+    #if multigpu:
+    #    model = nn.DataParallel(model)
     model.to(device)
 
     best_acc = 0.0
