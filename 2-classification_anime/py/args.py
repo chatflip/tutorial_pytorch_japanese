@@ -32,7 +32,7 @@ def opt():
                         help='image size')
     parser.add_argument('--crop_size', type=int, default=224,
                         help='crop size')
-    parser.add_argument('--workers', type=int, default=8,
+    parser.add_argument('--workers', type=int, default=16,
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for initializing training. ')
