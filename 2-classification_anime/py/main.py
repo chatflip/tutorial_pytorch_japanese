@@ -24,7 +24,8 @@ if __name__ == '__main__':
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
         os.mkdir('weight')
-    device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
+    multigpu = torch.cuda.is_available() and torch.cuda.device_count() > 1
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -64,21 +65,20 @@ if __name__ == '__main__':
         worker_init_fn=worker_init)
 
     model = resnet18(pretrained=True, num_classes=args.num_classes)
-    if args.evaluate:
-        print("use pretrained model : %s" % args.resume)
-        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
-        model.load_state_dict(param)
 
+    criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
     scheduler = optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
-    criterion = nn.CrossEntropyLoss().to(device)
+
     iteration = 0  # 反復回数保存用
-
-    model.to(device)  # gpu使うならcuda化
-
     if args.evaluate:
+        print("use pretrained model : %s" % args.resume)
+        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
+        model.load_state_dict(param).to(device)  # gpu使うならcuda化
+        if multigpu:
+            model = nn.DataParallel(model)
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
@@ -96,7 +96,10 @@ if __name__ == '__main__':
         best_acc1 = max(acc, best_acc)
         if is_best:
             saved_weight = 'weight/AnimeFace_resnet18_best.pth'
-            torch.save(model.cpu().state_dict(), saved_weight)
+            if multigpu:
+                torch.save(model.modules.cpu().state_dict(), saved_weight)
+            else:
+                torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)
 
     writer.close()  # tensorboard用のwriter閉じる
