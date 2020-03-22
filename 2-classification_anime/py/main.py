@@ -82,6 +82,10 @@ if __name__ == '__main__':
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
+    model.to(device)
+    if multigpu:
+        model = nn.DataParallel(model)
+
     best_acc = 0.0
     starttime = time.time()  # 実行時間計測(実時間)
     # 学習と評価
