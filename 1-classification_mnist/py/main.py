@@ -155,10 +155,10 @@ if __name__ == '__main__':
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     transform = transforms.Compose([
-                transforms.Resize(32, interpolation=2),  # リサイズ
-                transforms.ToTensor(),  # テンソル化
-                transforms.Normalize((0.1307,), (0.3081,))  # 標準化
-                ])
+        transforms.Resize(32, interpolation=2),  # リサイズ
+        transforms.ToTensor(),  # テンソル化
+        transforms.Normalize((0.1307,), (0.3081,))  # 標準化
+    ])
 
     # MNISTの学習用データ設定
     train_MNIST = datasets.MNIST(

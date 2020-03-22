@@ -37,13 +37,12 @@ if __name__ == '__main__':
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     train_transform = transforms.Compose([
-                      transforms.Resize(args.img_size, interpolation=2),  # リサイズ
-                      transforms.RandomCrop(args.crop_size),  # クロップ
-                      transforms.RandomHorizontalFlip(p=0.5),  # 左右反転
-                      transforms.ToTensor(),  # テンソル化
-                      normalize  # 標準化
-                      ])
-
+        transforms.Resize(args.img_size, interpolation=2),  # リサイズ
+        transforms.RandomCrop(args.crop_size),  # クロップ
+        transforms.RandomHorizontalFlip(p=0.5),  # 左右反転
+        transforms.ToTensor(),  # テンソル化
+        normalize  # 標準化
+    ])
 
     train_AnimeFace = AnimeFaceDB(
         args.path2db+'/train', transform=train_transform)

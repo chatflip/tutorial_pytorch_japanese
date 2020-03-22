@@ -33,11 +33,11 @@ if __name__ == '__main__':
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     val_transform = transforms.Compose([
-                     transforms.Resize(args.img_size, interpolation=2),  # リサイズ
-                     transforms.CenterCrop(args.crop_size),
-                     transforms.ToTensor(),  # テンソル化
-                     normalize  # 標準化
-                     ])
+        transforms.Resize(args.img_size, interpolation=2),  # リサイズ
+        transforms.CenterCrop(args.crop_size),
+        transforms.ToTensor(),  # テンソル化
+        normalize  # 標準化
+    ])
 
     # AnimeFaceの評価用データ設定
     val_AnimeFace = AnimeFaceDB(
