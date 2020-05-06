@@ -131,7 +131,7 @@ def opt():
                         help='no cuda')
     parser.add_argument('--resume', type=str, default='weight/MNIST_lenet_10.pth',
                         help='load weight')
-    parser.add_argument('--workers', type=int, default=8,
+    parser.add_argument('--workers', type=int, default=16,
                         help='number of data loading workers')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for initializing training. ')
