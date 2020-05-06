@@ -28,16 +28,16 @@ Mac or Ubuntu
 
 ### pytorch導入(仮想環境)
 ```
-$ conda create -n tutorial python=3.6 -y
+$ conda create -n tutorial python=3.7 -y
 $ source activate tutorial
-$ conda install -c pytorch pytorch=1.4.0 torchvision=0.5.0 cudatoolkit=10.1 -y
-$ pip install tb-nightly
+$ conda install -c pytorch pytorch=1.5.0 torchvision=0.6.0 cudatoolkit=10.2 -y
+$ pip install tb-nightly optuna
 ```
 
 ### notebook導入
 ```
-pip install ipython
-ipython kernel install --user --name=pt14 --display-name=pt14
+pip install ipykernel
+ipython kernel install --user --name=pt15 --display-name=pt15
 ```
 
 ## Author
