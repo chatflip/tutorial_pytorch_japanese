@@ -53,7 +53,6 @@ def train(args, model, device, train_loader, writer, criterion,
         iteration += 1
 
 
-
 def validate(args, model, device, val_loader,
              criterion, writer, iteration):
 
