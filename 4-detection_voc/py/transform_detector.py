@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # code from https://github.com/pytorch/vision/blob/master/torchvision/transforms/transforms.py
-from __future__ import division
 from loadDB import detAnn
 import math
 import random
