@@ -28,19 +28,8 @@ Mac or Ubuntu
 
 ### pytorch導入(仮想環境)
 ```
-$ conda create -n tutorial python=3.7 -y
-$ source activate tutorial
+$ conda create -n pt15 python=3.7 -y
+$ source activate pt15
 $ conda install -c pytorch pytorch=1.5.0 torchvision=0.6.0 cudatoolkit=10.2 -y
 $ pip install tb-nightly optuna
 ```
-
-### notebook導入
-```
-pip install ipykernel
-ipython kernel install --user --name=pt15 --display-name=pt15
-```
-
-## Author
-chatflip
-[[github](https://github.com/chatflip)]
-[[Qiita](https://qiita.com/chat-flip)]  

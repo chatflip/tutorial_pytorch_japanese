@@ -31,8 +31,3 @@ Elapsed time = 0h 0m 33s
 
 ## 参考文献
 [1] Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner, "Gradient-Based Learning Applied to Document Recognition," Proceedings of the IEEE, november, 1998.
-
-## Author
-chatflip
-[[github](https://github.com/chatflip)]
-[[Qiita](https://qiita.com/chat-flip)]  

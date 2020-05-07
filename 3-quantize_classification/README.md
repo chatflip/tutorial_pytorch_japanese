@@ -52,8 +52,3 @@ Validate: [6209/6209]   Time  0.013 ( 0.013)    infTime  0.012 ( 0.012) Loss 0.0
 Size (MB): 2.534283  
 Validate: [6209/6209]   Time  0.011 ( 0.012)    infTime  0.010 ( 0.011) Loss 0.00003 (0.04603)  Acc@1 100.00 ( 98.76)   Acc@5 100.00 ( 99.89)  
 ```
-
-## Author
-chatflip
-[[github](https://github.com/chatflip)]
-[[Qiita](https://qiita.com/chat-flip)]  

@@ -32,8 +32,3 @@ cuda 10.0
 cudnn 7.5  
 Accuracy .%  
 Elapsed time 0h m s  
-
-## Author
-chatflip
-[[github](https://github.com/chatflip)]
-[[Qiita](https://qiita.com/chat-flip)]  
