@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if not os.path.exists('weight'):
         os.mkdir('weight')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
-    multigpu = args.use_multi_gpu and torch.cuda.device_count() > 1
+    multigpu = torch.cuda.device_count() > 1  # グラボ2つ以上ならmultigpuにする
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
 
     iteration = 0  # 反復回数保存用
+    # 評価だけやる
     if args.evaluate:
         print("use pretrained model : %s" % args.resume)
         param = torch.load(args.resume, map_location=lambda storage, loc: storage)
@@ -96,13 +97,13 @@ if __name__ == '__main__':
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         acc = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
-
         is_best = acc > best_acc
         best_acc1 = max(acc, best_acc)
         if is_best:
             saved_weight = 'weight/AnimeFace_resnet18_best.pth'
+            # DataParallel使うとmoduleで
             if multigpu:
-                torch.save(model.modules.cpu().state_dict(), saved_weight)
+                torch.save(model.module.cpu().state_dict(), saved_weight)
             else:
                 torch.save(model.cpu().state_dict(), saved_weight)
             model.to(device)

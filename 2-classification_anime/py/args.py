@@ -38,7 +38,5 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=10,
                         help='print frequency (default: 10)')
-    parser.add_argument('--use_multi_gpu', type=bool, default=False,
-                        help='use multi gpu')
     args = parser.parse_args()
     return args
