@@ -11,7 +11,7 @@ def opt():
                         help='mini-batch size in train')
     parser.add_argument('--val-batch-size', type=int, default=512,
                         help='mini-batch size in validate')
-    parser.add_argument('--epochs', type=int, default=50,
+    parser.add_argument('--epochs', type=int, default=10,
                         help='number of total epochs to run')
     parser.add_argument('--num_classes', type=int, default=176,
                         help='num of classes')
