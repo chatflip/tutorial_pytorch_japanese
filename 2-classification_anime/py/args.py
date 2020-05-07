@@ -7,9 +7,9 @@ def opt():
                         help='path to database')
 
     # Train Validate settings
-    parser.add_argument('--batch-size', type=int, default=128,
+    parser.add_argument('--batch-size', type=int, default=256,
                         help='mini-batch size in train')
-    parser.add_argument('--val-batch-size', type=int, default=256,
+    parser.add_argument('--val-batch-size', type=int, default=512,
                         help='mini-batch size in validate')
     parser.add_argument('--epochs', type=int, default=50,
                         help='number of total epochs to run')
@@ -38,6 +38,7 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=10,
                         help='print frequency (default: 10)')
-
+    parser.add_argument('--use_multi_gpu', type=bool, default=False,
+                        help='use multi gpu')
     args = parser.parse_args()
     return args

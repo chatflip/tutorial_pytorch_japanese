@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if not os.path.exists('weight'):
         os.mkdir('weight')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
-    multigpu = torch.cuda.is_available() and torch.cuda.device_count() > 1
+    multigpu = args.use_multi_gpu and torch.cuda.device_count() > 1
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -77,14 +77,14 @@ if __name__ == '__main__':
         print("use pretrained model : %s" % args.resume)
         param = torch.load(args.resume, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
-        #if multigpu:
-        #    model = nn.DataParallel(model)
+        if multigpu:
+            model = nn.DataParallel(model)
         model.to(device)  # gpu使うならcuda化
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
-    #if multigpu:
-    #    model = nn.DataParallel(model)
+    if multigpu:
+        model = nn.DataParallel(model)
     model.to(device)
 
     best_acc = 0.0
