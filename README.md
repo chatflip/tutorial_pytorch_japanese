@@ -1,7 +1,8 @@
 pytorch tutorial for japanese
 ====
 
-昔の自分を確認する用
+昔の自分を確認する用  
+[ハードウェア構成](hardware.md)  
 
 ## Description
 [1-classification_mnist](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/1-classification_mnist)  
