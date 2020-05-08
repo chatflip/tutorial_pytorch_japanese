@@ -10,6 +10,7 @@ hardware
 | CPUファン |  NH-U12A |  
 | メモリ | CT2K16G4DFD8266 x2 |  
 | グラフィック | TURBO-RTX2080TI-11G x2 |  
+| SLI Bridge | ROG-NVLINK-3 |
 | SSD | 860 EVO MZ-76E500B/IT |  
 | HDD |  WD80EFAX |  
 | 電源 | HX1200i CP-9020070-JP |  
