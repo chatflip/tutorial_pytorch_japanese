@@ -4,7 +4,7 @@ notebook
 
 ## Installation
 ```
-pip install ipykernel
+pip install ipykernel plotly nbformat
 ipython kernel install --user --name=pt15 --display-name=pt15
 ```
 

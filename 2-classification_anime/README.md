@@ -21,6 +21,8 @@ $ python py/preprocess.py
 $ python py/main.py
 # ログ確認
 $ tensorboard --logdir=log/AnimeFace
+# パラメータ探索
+$ python py/search_param.py --epoch 2 --print-freq 100
 ```
 
 ## 動作環境(確認済み)
