@@ -15,11 +15,19 @@ from model import resnet18
 from train_val import train, validate
 from utils import seed_everything
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 if __name__ == '__main__':
     args = opt()
     print(args)
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
+    if args.apex and amp is None:
+        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
+                           "to enable mixed-precision training.")
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
         os.mkdir('weight')
@@ -65,13 +73,11 @@ if __name__ == '__main__':
         pin_memory=True, drop_last=False,
         worker_init_fn=worker_init)
 
-    model = resnet18(pretrained=True, num_classes=args.num_classes)
+    model = resnet18(pretrained=True, num_classes=args.num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
-    scheduler = optim.lr_scheduler.MultiStepLR(
-        optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
 
     iteration = 0  # 反復回数保存用
     # 評価だけやる
@@ -85,16 +91,26 @@ if __name__ == '__main__':
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
+    if args.apex:
+        model, optimizer = amp.initialize(
+            model, optimizer,
+            opt_level=args.apex_opt_level
+        )
+
+    model_without_ddp = model
     if multigpu:
         model = nn.DataParallel(model)
-    model.to(device)
+        model_without_ddp = model.module
+
+    scheduler = optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
 
     best_acc = 0.0
     starttime = time.time()  # 実行時間計測(実時間)
     # 学習と評価
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, writer,
-              criterion, optimizer, epoch, iteration)
+              criterion, optimizer, epoch, iteration, args.apex)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         acc = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
@@ -102,11 +118,7 @@ if __name__ == '__main__':
         best_acc1 = max(acc, best_acc)
         if is_best:
             saved_weight = 'weight/AnimeFace_resnet18_best.pth'
-            # DataParallel使うとmoduleで
-            if multigpu:
-                torch.save(model.module.cpu().state_dict(), saved_weight)
-            else:
-                torch.save(model.cpu().state_dict(), saved_weight)
+            torch.save(model_without_ddp.cpu().state_dict(), saved_weight)
             model.to(device)
 
     writer.close()  # tensorboard用のwriter閉じる

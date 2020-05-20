@@ -23,6 +23,8 @@ $ python py/main.py
 $ tensorboard --logdir=log/AnimeFace
 # パラメータ探索
 $ python py/search_param.py --epoch 2 --print-freq 100
+# apex使ったMixed-Precision Training
+$ python py/main.py --apex
 ```
 
 ## 動作環境(確認済み)
@@ -31,5 +33,11 @@ OS: Ubuntu 16.04
 グラフィック GeForce RTX 2080 Ti x2  
 cuda 10.2  
 cudnn 7.6.5  
-Top1 Accuracy 93.81%  
-Elapsed time 0h 3m 19s  
+
+float training  
+Top1 Accuracy 96.23%  
+Elapsed time 0h 3m 16s
+
+mixed-precision training  
+Top1 Accuracy 96.26%  
+Elapsed time 0h 2m 27s  
