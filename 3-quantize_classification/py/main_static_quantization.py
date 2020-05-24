@@ -6,7 +6,6 @@ import random
 
 import torch
 import torch.nn as nn
-import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
@@ -45,7 +44,8 @@ if __name__ == '__main__':
     ])
 
     train_AnimeFace = AnimeFaceDB(
-        args.path2db+'/train', transform=train_transform)
+        os.path.join(args.path2db, 'train'),
+        transform=train_transform)
     indices = list(range(len(train_AnimeFace)))
     random.shuffle(indices)
     indices = indices[:args.batch_size * args.num_calibration_batches]
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
 
     model = mobilenet_v2(pretrained=False, num_classes=args.num_classes)
-    weight_name = "weight/AnimeFace_mobilenetv2_float_epoch100.pth"
+    weight_name = 'weight/AnimeFace_mobilenetv2_float_best.pth'
     model = load_weight(model, weight_name)
 
     quantized_model = copy.deepcopy(model)
@@ -73,11 +73,20 @@ if __name__ == '__main__':
     torch.quantization.prepare(quantized_model, inplace=True)
 
     iteration = 0
+    starttime = time.time()  # 実行時間計測(実時間)
     validate(args, quantized_model, device, train_loader, criterion, writer, iteration)
 
     # Convert to quantized model
     torch.quantization.convert(quantized_model, inplace=True)
-    saved_weight = 'weight/AnimeFace_mobilenetv2_static_quantization_epoch100.pth'
+    saved_weight = 'weight/AnimeFace_mobilenetv2_static_quantization_best.pth'
     torch.save(quantized_model.state_dict(), saved_weight)
-    saved_script = 'weight/AnimeFace_mobilenetv2_script_static_quantization_epoch100.pth'
+    saved_script = 'weight/AnimeFace_mobilenetv2_static_quantization_script_best.pth'
     torch.jit.save(torch.jit.script(quantized_model), saved_script)
+
+    # 実行時間表示
+    endtime = time.time()
+    interval = endtime - starttime
+    print('elapsed time = {0:d}h {1:d}m {2:d}s'.format(
+        int(interval / 3600),
+        int((interval % 3600) / 60),
+        int((interval % 3600) % 60)))

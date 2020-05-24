@@ -18,37 +18,46 @@ quantize classification
 ```
 # ダウンロード，フォルダ構成
 $ python py/preprocess.py
+
 # float model training
-$ python py/main_float.py
+$ python py/main_float.py --apex
+
 # dynamic quantization
-$ python py/dynamic_quantization.py
+$ python py/main_dynamic_quantization.py
+
+# static quantization
+$ python py/main_static_quantization.py --batch-size=32 --backend=fbgemm
+
 # Quantization Aware Training
-$ python py/main_qat.py --epochs=10
+$ python py/main_qat.py --batch-size=64 --val-batch-size=128 --epoch=20 --lr=0.00001 --lr-step-size=30 --lr-gamma=0.1
+
+# evaliate
+$ python py/main_validate.py --val-batch-size=1 --print-freq=1000
 ```
 
 ## 動作環境(確認済み)
 OS: Ubuntu 16.04  
 プロセッサ Intel Core i9 3.6GHz  
-グラフィック GeForce RTX 2080 Ti  
-cuda 10.0  
-cudnn 7.5  
-
+グラフィック GeForce RTX 2080 Ti x2  
+cuda 10.2  
+cudnn 7.6.5  
+elapsed time = 0h 8m 56s
 
 ## Results
 ```
 # float model  
-Size (MB): 10.485055  
-Validate: [6209/6209]   Time  0.040 ( 0.041)    infTime  0.039 ( 0.040) Loss 0.00039 (0.03600)  Acc@1 100.00 ( 98.92)   Acc@5 100.00 ( 99.92)  
+Size (MB): 10.117735
+infTime 0.040  Loss 0.03600  Acc@1 98.92  Acc@5 99.92  
 
 # Dynamic quantization model  
-Size (MB): 9.811573  
-Validate: [6209/6209]   Time  0.040 ( 0.042)    infTime  0.039 ( 0.041) Loss 0.00038 (0.03604)  Acc@1 100.00 ( 98.92)   Acc@5 100.00 ( 99.92)  
+Size (MB): 9.446549
+infTime 0.023  Loss 0.04866  Acc@1 98.79  Acc@5 99.87  
 
 # Static quantization model  
-Size (MB): 2.724299  
-Validate: [6209/6209]   Time  0.013 ( 0.013)    infTime  0.012 ( 0.012) Loss 0.00168 (0.05084)  Acc@1 100.00 ( 98.73)   Acc@5 100.00 ( 99.89)  
+Size (MB): 2.535883  
+infTime 0.010  Loss 0.06769  Acc@1 98.45  Acc@5 99.79
 
 # Quantization Aware Training model  
-Size (MB): 2.534283  
-Validate: [6209/6209]   Time  0.011 ( 0.012)    infTime  0.010 ( 0.011) Loss 0.00003 (0.04603)  Acc@1 100.00 ( 98.76)   Acc@5 100.00 ( 99.89)  
+Size (MB): 2.535883
+infTime 0.008  Loss 0.04767  Acc@1 98.78  Acc@5 99.86
 ```

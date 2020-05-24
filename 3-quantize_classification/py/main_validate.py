@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import copy
 import os
 import sys
 import time
@@ -12,6 +11,7 @@ from torchvision import transforms
 
 from args import opt
 from loadDB import AnimeFaceDB
+from model_float import mobilenet_v2
 from train_val import validate
 from utils import seed_everything
 
@@ -20,6 +20,14 @@ def print_size_of_model(model):
     torch.jit.save(model, "temp.p")
     print('Size (MB):', os.path.getsize("temp.p")/(1e+6))
     os.remove('temp.p')
+
+
+def load_weight(model, weight_name):
+    assert os.path.isfile(weight_name), "don't exists weight: {}".format(weight_name)
+    print("use pretrained model : %s" % weight_name)
+    param = torch.load(weight_name, map_location=lambda storage, loc: storage)
+    model.load_state_dict(param)
+    return model
 
 
 if __name__ == '__main__':
@@ -41,7 +49,8 @@ if __name__ == '__main__':
 
     # AnimeFaceの評価用データ設定
     val_AnimeFace = AnimeFaceDB(
-        args.path2db+'/val', transform=val_transform)
+        os.path.join(args.path2db, 'val'),
+        transform=val_transform)
     val_loader = torch.utils.data.DataLoader(
         dataset=val_AnimeFace, batch_size=args.val_batch_size,
         shuffle=False, num_workers=args.workers,
@@ -51,25 +60,31 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     iteration = 0  # 反復回数保存用
 
+    saved_weight = 'weight/AnimeFace_mobilenetv2_float_best.pth'
+    saved_script = 'weight/AnimeFace_mobilenetv2_float_script_best.pth'
+    model = mobilenet_v2(num_classes=args.num_classes).eval()
+    model = load_weight(model, saved_weight)
+    torch.jit.save(torch.jit.script(model), saved_script)
+
     torch.set_num_threads(1)
-    model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_float_epoch100.pth')
+    model = torch.jit.load(saved_script)
     print('float model')
     print_size_of_model(model)
-    validate(args, model, device, val_loader, criterion, writer, iteration)
+    #validate(args, model, device, val_loader, criterion, writer, iteration)
 
-    model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_dynamic_quantization_epoch100.pth')
+    model = torch.jit.load('weight/AnimeFace_mobilenetv2_dynamic_quantization_script_best.pth')
     print('dynamic quantization model')
+    print_size_of_model(model)
+    #validate(args, model, device, val_loader, criterion, writer, iteration)
+
+    model = torch.jit.load('weight/AnimeFace_mobilenetv2_static_quantization_script_best.pth')
+    print('static quantization model')
     print_size_of_model(model)
     validate(args, model, device, val_loader, criterion, writer, iteration)
 
-    model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_static_quantization_epoch100.pth')
-    print('dynamic quantization model')
-    print_size_of_model(model)
-    validate(args, model, device, val_loader, criterion, writer, iteration)
-
-    model = torch.jit.load('weight/AnimeFace_mobilenetv2_script_qat_epoch20.pth')
+    model = torch.jit.load('weight/AnimeFace_mobilenetv2_qat_script_best.pth')
     print('quantization aware training model')
     print_size_of_model(model)
-    validate(args, model, device, val_loader, criterion, writer, iteration)
+    #validate(args, model, device, val_loader, criterion, writer, iteration)
 
     writer.close()  # tensorboard用のwriter閉じる

@@ -5,9 +5,14 @@ import torch
 
 from utils import AverageMeter, ProgressMeter, accuracy
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 def train(args, model, device, train_loader, writer, criterion,
-          optimizer, epoch, iteration):
+          optimizer, epoch, iteration, apex=False):
 
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
@@ -38,7 +43,11 @@ def train(args, model, device, train_loader, writer, criterion,
         top5.update(acc5[0], images.size(0))
 
         optimizer.zero_grad()  # 勾配初期化
-        loss.backward()  # 勾配計算(backprop)
+        if apex:
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
         optimizer.step()  # パラメータ更新
 
         batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
@@ -99,3 +108,4 @@ def validate(args, model, device, val_loader,
     progress.display(i + 1)
     writer.add_scalars('loss', {'val': losses.avg}, iteration)
     writer.add_scalars('accuracy', {'val': top1.avg}, iteration)
+    return top1.avg

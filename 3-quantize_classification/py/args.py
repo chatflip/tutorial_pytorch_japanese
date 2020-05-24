@@ -7,14 +7,12 @@ def opt():
                         help='path to database')
 
     # Train Validate settings
-    parser.add_argument('--batch-size', type=int, default=64,
+    parser.add_argument('--batch-size', type=int, default=128,
                         help='mini-batch size in train')
-    parser.add_argument('--val-batch-size', type=int, default=128,
+    parser.add_argument('--val-batch-size', type=int, default=256,
                         help='mini-batch size in validate')
-    parser.add_argument('--epochs', type=int, default=100,
+    parser.add_argument('--epochs', type=int, default=30,
                         help='number of total epochs to run')
-    parser.add_argument('--save-freq', type=int, default=10,
-                        help='save every N epoch')
     parser.add_argument('--num_classes', type=int, default=176,
                         help='num of classes')
 
@@ -43,6 +41,15 @@ def opt():
                         help='seed for initializing training. ')
     parser.add_argument('--print-freq', type=int, default=100,
                         help='print frequency (default: 10)')
+
+    # Mixed precision training parameters
+    parser.add_argument('--apex', action='store_true',
+                        help='Use apex for mixed precision training')
+    parser.add_argument('--apex-opt-level', default='O1', type=str,
+                        help='For apex mixed precision training'
+                             'O0 for FP32 training, O1 for mixed precision training.'
+                             'For further detail, see https://github.com/NVIDIA/apex/tree/master/examples/imagenet'
+                        )
 
     # quantization settings
     parser.add_argument('--backend', default='qnnpack',

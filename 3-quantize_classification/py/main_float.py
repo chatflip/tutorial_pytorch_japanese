@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import copy
 import os
 import sys
 import time
@@ -16,17 +15,24 @@ from model_float import mobilenet_v2
 from train_val import train, validate
 from utils import seed_everything
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 if __name__ == '__main__':
     args = opt()
     print(args)
     worker_init = seed_everything(args.seed)  # 乱数テーブル固定
-
+    if args.apex and amp is None:
+        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
+                           "to enable mixed-precision training.")
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
         os.mkdir('weight')
-
     device = torch.device('cuda' if torch.cuda.is_available()  else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
+    multigpu = torch.cuda.device_count() > 1  # グラボ2つ以上ならmultigpuにする
     writer = SummaryWriter(log_dir='log/AnimeFace/float')  # tensorboard用のwriter作成
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
@@ -49,7 +55,8 @@ if __name__ == '__main__':
 
     # AnimeFaceの学習用データ設定
     train_AnimeFace = AnimeFaceDB(
-        args.path2db+'/train', transform=train_transform)
+        os.path.join(args.path2db, 'train'),
+        transform=train_transform)
     train_loader = torch.utils.data.DataLoader(
         dataset=train_AnimeFace, batch_size=args.batch_size,
         shuffle=True, num_workers=args.workers,
@@ -58,7 +65,8 @@ if __name__ == '__main__':
 
     # AnimeFaceの評価用データ設定
     val_AnimeFace = AnimeFaceDB(
-        args.path2db+'/val', transform=val_transform)
+        os.path.join(args.path2db, 'val'),
+        transform=val_transform)
     val_loader = torch.utils.data.DataLoader(
         dataset=val_AnimeFace, batch_size=args.val_batch_size,
         shuffle=False, num_workers=args.workers,
@@ -69,36 +77,49 @@ if __name__ == '__main__':
     model = mobilenet_v2(
         pretrained=True, num_classes=args.num_classes).to(device)
 
+    criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
-    scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
 
-    criterion = nn.CrossEntropyLoss().to(device)
     iteration = 0  # 反復回数保存用
+
+    if args.apex:
+        model, optimizer = amp.initialize(
+            model, optimizer,
+            opt_level=args.apex_opt_level
+        )
+
+    model_without_ddp = model
+    if multigpu:
+        model = nn.DataParallel(model)
+        model_without_ddp = model.module
 
     if args.evaluate:
         validate(args, model, device, val_loader, criterion, writer, iteration)
         sys.exit()
 
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)
+
     starttime = time.time()  # 実行時間計測(実時間)
+    best_acc1 = 0
+
     # 学習と評価
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, writer,
-              criterion, optimizer, epoch, iteration)
+              criterion, optimizer, epoch, iteration, args.apex)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
-        validate(args, model, device, val_loader, criterion, writer, iteration)
+        acc1 = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
-        # 重み保存
-        if epoch % args.save_freq == 0:
-            saved_weight = 'weight/AnimeFace_mobilenetv2_float_epoch{}.pth'.format(epoch)
-            torch.save(model.cpu().state_dict(), saved_weight)
-            model.to(device)
 
-    model.to('cpu')
-    model.eval()
-    saved_script = 'weight/AnimeFace_mobilenetv2_script_float_epoch{}.pth'.format(args.epochs)
-    torch.jit.save(torch.jit.script(model), saved_script)
+        is_best = acc1 > best_acc1
+        best_acc1 = max(acc1, best_acc1)
+
+        # 重み保存
+        if is_best:
+            saved_weight = 'weight/AnimeFace_mobilenetv2_float_best.pth'
+            torch.save(model_without_ddp.cpu().state_dict(), saved_weight)
+            model.to(device)
 
     writer.close()  # tensorboard用のwriter閉じる
     # 実行時間表示
