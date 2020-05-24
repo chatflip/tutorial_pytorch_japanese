@@ -70,12 +70,12 @@ if __name__ == '__main__':
     model = torch.jit.load(saved_script)
     print('float model')
     print_size_of_model(model)
-    #validate(args, model, device, val_loader, criterion, writer, iteration)
+    validate(args, model, device, val_loader, criterion, writer, iteration)
 
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_dynamic_quantization_script_best.pth')
     print('dynamic quantization model')
     print_size_of_model(model)
-    #validate(args, model, device, val_loader, criterion, writer, iteration)
+    validate(args, model, device, val_loader, criterion, writer, iteration)
 
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_static_quantization_script_best.pth')
     print('static quantization model')
@@ -85,6 +85,6 @@ if __name__ == '__main__':
     model = torch.jit.load('weight/AnimeFace_mobilenetv2_qat_script_best.pth')
     print('quantization aware training model')
     print_size_of_model(model)
-    #validate(args, model, device, val_loader, criterion, writer, iteration)
+    validate(args, model, device, val_loader, criterion, writer, iteration)
 
     writer.close()  # tensorboard用のwriter閉じる
