@@ -18,13 +18,11 @@ classification　anime
 # ダウンロード，フォルダ構成
 $ python py/preprocess.py
 # 学習，識別
-$ python py/main.py
+$ python -m torch.distributed.launch --nproc_per_node=2 --use_env py/main.py 
 # ログ確認
 $ tensorboard --logdir=log/AnimeFace
-# パラメータ探索
-$ python py/search_param.py --epoch 2 --print-freq 100
 # apex使ったMixed-Precision Training
-$ python py/main.py --apex
+$ python -m torch.distributed.launch --nproc_per_node=2 --use_env py/main.py --apex
 ```
 
 ## 動作環境(確認済み)

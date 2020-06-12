@@ -39,17 +39,6 @@ def opt():
     parser.add_argument('--print-freq', type=int, default=10,
                         help='print frequency (default: 10)')
 
-    # distributed training parameters
-
-    parser.add_argument('--world-size', default=1, type=int,
-                       help='number of nodes for distributed training')
-    parser.add_argument('--rank', default=-1, type=int,
-                        help='node rank for distributed training')
-    parser.add_argument('--dist-url', default='env://', type=str,
-                        help='url used to set up distributed training')
-    parser.add_argument('--dist-backend', default='nccl', type=str,
-                        help='distributed backend')
-
     # Mixed precision training parameters
     parser.add_argument('--apex', action='store_true',
                         help='Use apex for mixed precision training')
@@ -58,5 +47,23 @@ def opt():
                              'O0 for FP32 training, O1 for mixed precision training.'
                              'For further detail, see https://github.com/NVIDIA/apex/tree/master/examples/imagenet'
                         )
+
+    # distribution settings
+    parser.add_argument('--world-size', default=-1, type=int,
+                        help='number of nodes for distributed training')
+    parser.add_argument('--rank', default=-1, type=int,
+                        help='node rank for distributed training')
+    parser.add_argument('--dist-url', default='env://', type=str,
+                        help='url used to set up distributed training')
+    parser.add_argument('--dist-backend', default='nccl', type=str,
+                        help='distributed backend')
+    parser.add_argument('--gpu', default=None, type=int,
+                        help='GPU id to use.')
+    parser.add_argument('--multiprocessing-distributed', action='store_true',
+                        help='Use multi-processing distributed training to launch '
+                             'N processes per node, which has N GPUs. This is the '
+                             'fastest way to use PyTorch for either single node or '
+                             'multi node data parallel training')
+
     args = parser.parse_args()
     return args

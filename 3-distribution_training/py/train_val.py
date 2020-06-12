@@ -33,7 +33,8 @@ def train(args, model, device, train_loader, writer, criterion,
     for i, (images, target) in enumerate(train_loader):
         data_time.update(time.time() - end)  # 画像のロード時間記録
 
-        images, target = images.to(device), target.to(device)  # gpu使うなら画像とラベルcuda化
+        images = images.to(device, non_blocking=True)  # gpu使うなら画像とラベルcuda化
+        target = target.to(device, non_blocking=True)  # gpu使うなら画像とラベルcuda化
         output = model(images)  # sofmaxm前まで出力(forward)
         loss = criterion(output, target)  # ネットワークの出力をsoftmax + ラベルとのloss計算
 

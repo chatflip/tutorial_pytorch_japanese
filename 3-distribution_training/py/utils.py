@@ -4,6 +4,7 @@ import os
 
 import numpy as np
 import torch
+import torch.distributed as dist
 
 
 # ログ記録用クラス
@@ -76,9 +77,34 @@ def seed_everything(seed=1234):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
 
+
+def get_worker_init(seed=1234):
     def worker_init_fn(worker_id):
         random.seed(worker_id + seed)
     return worker_init_fn
+
+
+def is_dist_avail_and_initialized():
+    if not dist.is_available():
+        return False
+    if not dist.is_initialized():
+        return False
+    return True
+
+
+def get_rank():
+    if not is_dist_avail_and_initialized():
+        return 0
+    return dist.get_rank()
+
+
+def is_main_process():
+    return get_rank() == 0
+
+
+def save_on_master(*args, **kwargs):
+    if is_main_process():
+        torch.save(*args, **kwargs)
 
 
 def setup_for_distributed(is_master):
@@ -114,7 +140,6 @@ def init_distributed_mode(args):
     args.distributed = True
 
     torch.cuda.set_device(args.gpu)
-    args.dist_backend = 'nccl'
     print('| distributed init (rank {}): {}'.format(
         args.rank, args.dist_url), flush=True)
     torch.distributed.init_process_group(backend=args.dist_backend, init_method=args.dist_url,

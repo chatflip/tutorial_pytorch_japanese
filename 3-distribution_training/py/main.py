@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 import time
 
 import torch
 import torch.nn as nn
-import torch.multiprocessing as mp
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
@@ -14,12 +12,13 @@ from args import opt
 from loadDB import AnimeFaceDB
 from model import resnet18
 from train_val import train, validate
-from utils import seed_everything, init_distributed_mode
+from utils import seed_everything, get_worker_init, init_distributed_mode, save_on_master
 
 try:
     from apex import amp
 except ImportError:
     amp = None
+
 
 def load_data(args):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -47,78 +46,53 @@ def load_data(args):
         transform=train_transform)
 
     # AnimeFaceの評価用データ設定
-    test_dataset = AnimeFaceDB(
+    val_dataset = AnimeFaceDB(
         os.path.join(args.path2db, 'val'),
         transform=val_transform)
 
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
-        test_sampler = torch.utils.data.distributed.DistributedSampler(test_dataset)
+        val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset)
     else:
-        train_sampler = None
-        test_sampler = None
-    return train_dataset, test_dataset, train_sampler, test_sampler
+        train_sampler = torch.utils.data.RandomSampler(train_dataset)
+        val_sampler = torch.utils.data.SequentialSampler(val_dataset)
+
+    return train_dataset, val_dataset, train_sampler, val_sampler
+
 
 def main():
     args = opt()
     print(args)
-
+    seed_everything(args.seed)  # 乱数テーブル固定
+    worker_init = get_worker_init()
+    if args.apex and amp is None:
+        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
+                           "to enable mixed-precision training.")
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
         os.mkdir('weight')
 
-    if args.dist_url == "env://" and args.world_size == -1:
-        args.world_size = int(os.environ["WORLD_SIZE"])
-
-    args.distributed = args.world_size > 1 or args.multiprocessing_distributed
-
-    ngpus_per_node = torch.cuda.device_count()
-    if args.multiprocessing_distributed:
-        # Since we have ngpus_per_node processes per node, the total world_size
-        # needs to be adjusted accordingly
-        args.world_size = ngpus_per_node * args.world_size
-        # Use torch.multiprocessing.spawn to launch distributed processes: the
-        # main_worker process function
-        mp.spawn(main_worker, nprocs=ngpus_per_node, args=(ngpus_per_node, args))
-    else:
-        # Simply call main_worker function
-        main_worker(args.gpu, ngpus_per_node, args)
-
-
-def main_worker(gpu, ngpus_per_node, args):
-    # TODO: main内じゃなくていいか確認
-    worker_init = seed_everything(args.seed)  # 乱数テーブル固定
-    if args.gpu is not None:
-        print("Use GPU: {} for training".format(args.gpu))
-    args.gpu = gpu
-
-
-
-
-
-
-
-
-
-    if args.apex and amp is None:
-        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
-                           "to enable mixed-precision training.")
-
+    init_distributed_mode(args)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
-    multigpu = torch.cuda.device_count() > 1  # グラボ2つ以上ならmultigpuにする
+    ngpus_per_node = torch.cuda.device_count()
     writer = SummaryWriter(log_dir='log/AnimeFace')  # tensorboard用のwriter作成
 
-    # dataset, dataloader設定
-    train_dataset, test_dataset, train_sampler, test_sampler = load_data(args)
+    if args.distributed:
+        args.batch_size = int(args.batch_size / ngpus_per_node)
+        args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
+
+    train_dataset, val_dataset, train_sampler, val_sampler = load_data(args)
+
     train_loader = torch.utils.data.DataLoader(
         dataset=train_dataset, batch_size=args.batch_size,
-        shuffle=(train_sampler is None), sampler=train_sampler,
-        num_workers=args.workers, pin_memory=True,
+        sampler=train_sampler, num_workers=args.workers,
+        pin_memory=True, drop_last=True,
         worker_init_fn=worker_init)
-    test_loader = torch.utils.data.DataLoader(
-        dataset=test_dataset, batch_size=args.batch_size,
-        shuffle=False, sampler=test_sampler,
-        num_workers=args.workers, pin_memory=True,
+
+    val_loader = torch.utils.data.DataLoader(
+        dataset=val_dataset, batch_size=args.batch_size,
+        sampler=val_sampler, num_workers=args.workers,
+        pin_memory=True, drop_last=False,
         worker_init_fn=worker_init)
 
     model = resnet18(pretrained=True, num_classes=args.num_classes).to(device)
@@ -128,16 +102,6 @@ def main_worker(gpu, ngpus_per_node, args):
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)  # 最適化方法定義
 
     iteration = 0  # 反復回数保存用
-    # 評価だけやる
-    if args.evaluate:
-        print("use pretrained model : %s" % args.resume)
-        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
-        model.load_state_dict(param)
-        if multigpu:
-            model = nn.DataParallel(model)
-        model.to(device)  # gpu使うならcuda化
-        validate(args, model, device, test_loader, criterion, writer, iteration)
-        sys.exit()
 
     if args.apex:
         model, optimizer = amp.initialize(
@@ -146,15 +110,18 @@ def main_worker(gpu, ngpus_per_node, args):
         )
 
     model_without_ddp = model
-    # distributed
     if args.distributed:
-
-    # TODO: CPU,GPU1枚のときもできるか検証
-    else:
-        model = nn.DataParallel(model)
+        model = nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         model_without_ddp = model.module
 
-
+    # 評価だけやる
+    if args.evaluate:
+        print("use pretrained model : %s" % args.resume)
+        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
+        model_without_ddp.load_state_dict(param)
+        model.to(device)  # gpu使うならcuda化
+        validate(args, model, device, val_loader, criterion, writer, iteration)
+        return
 
     scheduler = optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
@@ -168,13 +135,13 @@ def main_worker(gpu, ngpus_per_node, args):
         train(args, model, device, train_loader, writer,
               criterion, optimizer, epoch, iteration, args.apex)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
-        acc = validate(args, model, device, test_loader, criterion, writer, iteration)
+        acc = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
         is_best = acc > best_acc
         best_acc1 = max(acc, best_acc)
         if is_best:
             saved_weight = 'weight/AnimeFace_resnet18_best.pth'
-            torch.save(model_without_ddp.cpu().state_dict(), saved_weight)
+            save_on_master(model_without_ddp.state_dict(), saved_weight)
             model.to(device)
 
     writer.close()  # tensorboard用のwriter閉じる
