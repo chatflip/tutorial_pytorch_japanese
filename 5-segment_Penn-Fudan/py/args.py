@@ -9,7 +9,7 @@ def opt():
     # Train Validate settings
     parser.add_argument('--batch-size', type=int, default=8,
                         help='mini-batch size in train')
-    parser.add_argument('--epochs', type=int, default=10,
+    parser.add_argument('--epochs', type=int, default=50,
                         help='number of total epochs to run')
     parser.add_argument('--num_classes', type=int, default=2,
                         help='num of classes')
