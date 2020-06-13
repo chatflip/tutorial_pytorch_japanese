@@ -11,8 +11,14 @@ pytorch tutorial for japanese
 [2-classification_anime](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/2-classification_anime)  
 pytorchのデータセットを使わない画像識別  
 
-[3-quantize_classification](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-quantize_classification)  
+[3-distribution_training](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/3-distribution_training)  
+分散学習  
+
+[4-quantize_classification](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/4-quantize_classification)  
 量子化したmodelの学習  
+
+[5-segment_Penn-Fudan](https://github.com/chatflip/tutorial_pytorch_japanese/tree/master/5-segment_Penn-Fudan)  
+物体検出, 領域分割  
 
 [pruning.ipynb](https://github.com/chatflip/tutorial_pytorch_japanese/blob/master/notebook/pruning.ipynb)  
 1-classification_mnistのmodelの枝刈り  
