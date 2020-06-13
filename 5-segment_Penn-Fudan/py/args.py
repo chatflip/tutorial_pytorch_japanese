@@ -7,7 +7,7 @@ def opt():
                         help='path to database')
 
     # Train Validate settings
-    parser.add_argument('--batch-size', type=int, default=4,
+    parser.add_argument('--batch-size', type=int, default=8,
                         help='mini-batch size in train')
     parser.add_argument('--epochs', type=int, default=10,
                         help='number of total epochs to run')
