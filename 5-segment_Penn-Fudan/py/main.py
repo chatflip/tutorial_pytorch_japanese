@@ -36,7 +36,7 @@ def main():
     args = opt()
     print(args)
     utils.seed_everything(args.seed)  # 乱数テーブル固定
-    collate_fn = utils.get_worker_init(args.seed)
+    collate_fn = utils.get_worker_init()
     if args.apex and amp is None:
         raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
                            "to enable mixed-precision training.")
