@@ -36,7 +36,7 @@ def main():
     args = opt()
     print(args)
     utils.seed_everything(args.seed)  # 乱数テーブル固定
-    collate_fn = utils.get_worker_init()
+    worker_init = utils.get_worker_init()
     if args.apex and amp is None:
         raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
                            "to enable mixed-precision training.")
@@ -58,13 +58,13 @@ def main():
         dataset=train_dataset, batch_size=args.batch_size,
         sampler=train_sampler, num_workers=args.workers,
         pin_memory=True, drop_last=True,
-        collate_fn=collate_fn)
+        collate_fn=utils.collate_fn, worker_init=worker_init)
 
     val_loader = torch.utils.data.DataLoader(
         dataset=val_dataset, batch_size=args.batch_size,
         sampler=val_sampler, num_workers=args.workers,
         pin_memory=True, drop_last=False,
-        collate_fn=collate_fn)
+        collate_fn=utils.collate_fn, worker_init=worker_init)
 
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
