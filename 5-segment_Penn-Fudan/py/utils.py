@@ -8,6 +8,7 @@ import random
 
 import torch
 import torch.distributed as dist
+import numpy as np
 
 import errno
 import os
