@@ -4,6 +4,7 @@ from collections import defaultdict, deque
 import datetime
 import pickle
 import time
+import random
 
 import torch
 import torch.distributed as dist
@@ -308,3 +309,19 @@ def init_distributed_mode(args):
                                          world_size=args.world_size, rank=args.rank)
     torch.distributed.barrier()
     setup_for_distributed(args.rank == 0)
+
+# code from https://www.kaggle.com/bminixhofer/
+#           deterministic-neural-networks-using-pytorch
+def seed_everything(seed=1234):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+
+
+def get_worker_init(seed=1234):
+    def worker_init_fn(worker_id):
+        random.seed(worker_id + seed)
+    return worker_init_fn
