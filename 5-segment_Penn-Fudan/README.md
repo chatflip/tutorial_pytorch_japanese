@@ -31,7 +31,7 @@ cp references/detection/engine.py ../py/
 cp references/detection/coco_utils.py ../py/
 
 # 学習，識別
-$ python py/main.py
+$ python -m torch.distributed.launch --nproc_per_node=2 --use_env py/main.py 
 ```
 
 ## 動作環境(確認済み)
