@@ -9,6 +9,11 @@ from coco_utils import get_coco_api_from_dataset
 from coco_eval import CocoEvaluator
 import utils
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
     model.train()
@@ -43,7 +48,11 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
             sys.exit(1)
 
         optimizer.zero_grad()
-        losses.backward()
+        if apex:
+            with amp.scale_loss(losses, optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            losses.backward()
         optimizer.step()
 
         if lr_scheduler is not None:
