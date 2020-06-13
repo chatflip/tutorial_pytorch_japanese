@@ -10,11 +10,6 @@ from transform import get_transform
 from dataset import PennFudanDataset
 from model import get_instance_segmentation_model
 
-try:
-    from apex import amp
-except ImportError:
-    amp = None
-
 
 def load_data(args):
     # use our dataset and defined transformations
@@ -37,9 +32,6 @@ def main():
     print(args)
     utils.seed_everything(args.seed)  # 乱数テーブル固定
     worker_init = utils.get_worker_init()
-    if args.apex and amp is None:
-        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
-                           "to enable mixed-precision training.")
     # フォルダが存在してなければ作る
     if not os.path.exists('weight'):
         os.mkdir('weight')
@@ -79,15 +71,8 @@ def main():
     optimizer = torch.optim.SGD(
         params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-
     # --evaluate
     # --resume
-
-    if args.apex:
-        model, optimizer = amp.initialize(
-            model, optimizer,
-            opt_level=args.apex_opt_level
-        )
 
     model_without_ddp = model
     if args.distributed:
