@@ -58,13 +58,13 @@ def main():
         dataset=train_dataset, batch_size=args.batch_size,
         sampler=train_sampler, num_workers=args.workers,
         pin_memory=True, drop_last=True,
-        collate_fn=utils.collate_fn, worker_init=worker_init)
+        collate_fn=utils.collate_fn, worker_init_fn=worker_init)
 
     val_loader = torch.utils.data.DataLoader(
         dataset=val_dataset, batch_size=args.batch_size,
         sampler=val_sampler, num_workers=args.workers,
         pin_memory=True, drop_last=False,
-        collate_fn=utils.collate_fn, worker_init=worker_init)
+        collate_fn=utils.collate_fn, worker_init_fn=worker_init)
 
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
