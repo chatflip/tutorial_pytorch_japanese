@@ -63,7 +63,7 @@ def main():
     args = opt()
     print(args)
     seed_everything(args.seed)  # 乱数テーブル固定
-    os.makedirs('weight', exist_ok=True)
+    os.makedirs(args.path2weight, exist_ok=True)
     writer = SummaryWriter(log_dir='log/animeface')  # tensorboard用のwriter作成
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
 
@@ -82,7 +82,8 @@ def main():
     # 評価だけやる
     if args.evaluate:
         print("use pretrained model : %s" % args.resume)
-        param = torch.load(args.resume, map_location=lambda storage, loc: storage)
+        weight_name = '{}/{}_mobilenetv2_best.pth'.format(args.path2weight, args.exp_name)
+        param = torch.load(weight_name, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
         if multigpu:
             model = nn.DataParallel(model)
@@ -95,8 +96,8 @@ def main():
         model = nn.DataParallel(model)
         model_without_dp = model.module
 
-    scheduler = optim.lr_scheduler.MultiStepLR(
-        optimizer, milestones=[int(0.5*args.epochs), int(0.75*args.epochs)], gamma=0.1)  # 学習率の軽減スケジュール
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=args.lr_step_size, gamma=args.lr_gamma)  # 学習率の軽減スケジュール
 
     best_acc = 0.0
     # 学習再開時の設定
@@ -122,8 +123,9 @@ def main():
         is_best = acc > best_acc
         best_acc = max(acc, best_acc)
         if is_best:
-            torch.save(model_without_dp.cpu().state_dict(), args.resume)
-            model.to(device)
+            print('Acc@1 best: {}'.format(best_acc))
+            weight_name = '{}/{}_mobilenetv2_best.pth'.format(args.path2weight, args.exp_name)
+            torch.save(model_without_dp.cpu().state_dict(), weight_name)
             checkpoint = {
                 'model': model_without_dp.cpu().state_dict(),
                 'optimizer': optimizer.state_dict(),

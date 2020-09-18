@@ -1,5 +1,5 @@
 # https://github.com/pytorch/vision/blob/v0.7.0/torchvision/models/mobilenet.py
-import torch
+from torch.cuda.amp import autocast
 import torch.nn as nn
 
 try:
@@ -7,7 +7,6 @@ try:
 except ImportError:
     from torch.utils.model_zoo import load_url as load_state_dict_from_url
 
-from torch.cuda.amp import autocast
 __all__ = ['MobileNetV2', 'mobilenet_v2']
 
 

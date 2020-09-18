@@ -18,9 +18,7 @@
 # ダウンロード，フォルダ構成
 python py/setup.py
 # 学習，識別
-python py/main.py
-python py/main.py --evaluate
-# mixed precision training実行
+bash start.sh
 python py/main.py --apex
 # ログ確認
 tensorboard --logdir=log/animeface
@@ -33,8 +31,8 @@ OS: Ubuntu 16.04
 cuda 10.2  
 cudnn 7.6.5  
 
-float training  
-Top1 Accuracy 96.23%  
-Elapsed time 0h 3m 16s
+Top1 Accuracy 91.92%  
+elapsed time = 0h 2m 12s
+
 
 

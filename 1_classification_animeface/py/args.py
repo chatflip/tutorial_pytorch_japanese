@@ -3,9 +3,11 @@ import argparse
 
 def opt():
     parser = argparse.ArgumentParser(description='PyTorch AnimeFace')
-    parser.add_argument('--exp_name', type=str, default='',
+    parser.add_argument('--exp_name', type=str, default='animeface',
                         help='prefix')
     parser.add_argument('--path2db', type=str, default='./../datasets/animeface/data',
+                        help='path to database')
+    parser.add_argument('--path2weight', type=str, default='weight',
                         help='path to database')
 
     # network settings
@@ -13,11 +15,15 @@ def opt():
                         help='num of classes')
 
     # training settings
-    parser.add_argument('--lr', type=float, default=0.00045,
+    parser.add_argument('--lr', type=float, default=0.0045,
                         help='initial learning rate')
+    parser.add_argument('--lr-step-size', default=1, type=int,
+                        help='decrease lr every step-size epochs')
+    parser.add_argument('--lr-gamma', default=0.98, type=float,
+                        help='decrease lr by a factor of lr-gamma')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum')
-    parser.add_argument('--weight_decay', type=float, default=1e-04,
+    parser.add_argument('--weight_decay', type=float, default=1e-5,
                         help='weight_decay')
     parser.add_argument('--batch-size', type=int, default=128,
                         help='mini-batch size in train')
@@ -31,7 +37,7 @@ def opt():
                         help='evaluate model on validation set')
     parser.add_argument('--restart', action='store_true',
                         help='restart training')
-    parser.add_argument('--resume', type=str, default='weight/animeface_mobilenetv2_best.pth',
+    parser.add_argument('--resume', type=str, default='weight/mobilenetv2_best.pth',
                         help='load weight')
     parser.add_argument('--img_size', type=int, default=256,
                         help='image size')
