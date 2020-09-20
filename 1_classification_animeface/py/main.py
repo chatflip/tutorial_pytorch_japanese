@@ -64,7 +64,7 @@ def main():
     print(args)
     seed_everything(args.seed)  # 乱数テーブル固定
     os.makedirs(args.path2weight, exist_ok=True)
-    writer = SummaryWriter(log_dir='log/animeface')  # tensorboard用のwriter作成
+    writer = SummaryWriter(log_dir='log/{}')  # tensorboard用のwriter作成
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
