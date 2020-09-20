@@ -37,8 +37,6 @@ def opt():
                         help='evaluate model on validation set')
     parser.add_argument('--restart', action='store_true',
                         help='restart training')
-    parser.add_argument('--resume', type=str, default='weight/mobilenetv2_best.pth',
-                        help='load weight')
     parser.add_argument('--img_size', type=int, default=256,
                         help='image size')
     parser.add_argument('--crop_size', type=int, default=224,

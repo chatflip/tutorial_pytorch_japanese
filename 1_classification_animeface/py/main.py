@@ -81,8 +81,8 @@ def main():
     iteration = 0  # 反復回数保存用
     # 評価だけやる
     if args.evaluate:
-        print("use pretrained model : %s" % args.resume)
         weight_name = '{}/{}_mobilenetv2_best.pth'.format(args.path2weight, args.exp_name)
+        print("use pretrained model : {}".format(weight_name))
         param = torch.load(weight_name, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
         if multigpu:
