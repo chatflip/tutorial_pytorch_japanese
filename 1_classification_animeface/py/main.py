@@ -123,7 +123,7 @@ def main():
         is_best = acc > best_acc
         best_acc = max(acc, best_acc)
         if is_best:
-            print('Acc@1 best: {}'.format(best_acc))
+            print('Acc@1 best: {:6.2f}%'.format(best_acc))
             weight_name = '{}/{}_mobilenetv2_best.pth'.format(args.path2weight, args.exp_name)
             torch.save(model_without_dp.cpu().state_dict(), weight_name)
             checkpoint = {
