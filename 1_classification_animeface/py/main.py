@@ -15,6 +15,11 @@ from model import mobilenet_v2
 from train_val import train, validate
 from utils import get_worker_init, seed_everything
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 def load_data(args):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -63,6 +68,9 @@ def main():
     args = opt()
     print(args)
     seed_everything(args.seed)  # 乱数テーブル固定
+    if args.apex and amp is None:
+        raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
+                           "to enable mixed-precision training.")
     os.makedirs(args.path2weight, exist_ok=True)
     writer = SummaryWriter(log_dir='log/{}')  # tensorboard用のwriter作成
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
@@ -89,7 +97,13 @@ def main():
             model = nn.DataParallel(model)
         model.to(device)  # gpu使うならcuda化
         validate(args, model, device, val_loader, criterion, writer, iteration)
-        sys.exit()
+        return
+
+    if args.apex:
+        model, optimizer = amp.initialize(
+            model, optimizer,
+            opt_level=args.apex_opt_level
+        )
 
     model_without_dp = model
     if multigpu:

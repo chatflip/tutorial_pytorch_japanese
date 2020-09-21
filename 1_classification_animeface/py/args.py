@@ -51,5 +51,10 @@ def opt():
     # Mixed precision training parameters
     parser.add_argument('--apex', action='store_true',
                         help='Use apex for mixed precision training')
+    parser.add_argument('--apex-opt-level', default='O1', type=str,
+                        help='For apex mixed precision training'
+                             'O0 for FP32 training, O1 for mixed precision training.'
+                             'For further detail, see https://github.com/NVIDIA/apex/tree/master/examples/imagenet'
+                        )
     args = parser.parse_args()
     return args
