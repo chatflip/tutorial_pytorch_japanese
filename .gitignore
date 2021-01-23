@@ -131,13 +131,6 @@ dmypy.json
 # PyCharm
 .idea
 
-# PyTorch weight
-*.pth
-*.pth.tar
-*.pt
-
-
 # Specific folder
-log
 /datasets/*
 /backup
