@@ -14,6 +14,8 @@ from model import mobilenet_v2
 from train_val import train, validate
 from utils import get_worker_init, seed_everything
 
+cwd = hydra.utils.get_original_cwd()
+
 
 def load_data(args):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -37,9 +39,7 @@ def load_data(args):
 
     # AnimeFaceの学習用データ設定
     train_dataset = AnimeFaceDataset(
-        os.path.join(
-            hydra.utils.get_original_cwd(),
-            args.common.path2db, 'train'),
+        os.path.join(cwd, args.common.path2db, 'train'),
         transform=train_transform)
     train_loader = torch.utils.data.DataLoader(
         dataset=train_dataset, batch_size=args.common.batch_size,
@@ -49,9 +49,7 @@ def load_data(args):
 
     # AnimeFaceの評価用データ設定
     val_dataset = AnimeFaceDataset(
-        os.path.join(
-            hydra.utils.get_original_cwd(),
-            args.common.path2db, 'val'),
+        os.path.join(cwd, args.common.path2db, 'val'),
         transform=val_transform)
     val_loader = torch.utils.data.DataLoader(
         dataset=val_dataset, batch_size=args.common.batch_size,
@@ -62,13 +60,11 @@ def load_data(args):
     return train_loader, val_loader
 
 
-@hydra.main(config_name='./../conf/config.yaml')
+@hydra.main(config_name='./../config/config.yaml')
 def main(args):
     seed_everything(args.common.seed)  # 乱数テーブル固定
-    os.makedirs(os.path.join(hydra.utils.get_original_cwd(), args.common.path2weight), exist_ok=True)
-    writer = SummaryWriter(log_dir='{}/log/{}'.format(
-        hydra.utils.get_original_cwd(),
-        args.common.exp_name))  # tensorboard用のwriter作成
+    os.makedirs(os.path.join(cwd, args.common.path2weight), exist_ok=True)
+    writer = SummaryWriter(log_dir='{}/log/{}'.format(cwd, args.common.exp_name))  # tensorboard用のwriter作成
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     multigpu = torch.cuda.device_count() > 1  # グラボ2つ以上ならmultigpuにする
@@ -88,7 +84,7 @@ def main(args):
     # 評価だけやる
     if args.common.evaluate:
         weight_name = '{}/{}/{}_mobilenetv2_best.pth'.format(
-            hydra.utils.get_original_cwd(),
+            cwd,
             args.common.path2weight,
             args.common.exp_name)
         print("use pretrained model : {}".format(weight_name))
@@ -115,7 +111,7 @@ def main(args):
     if args.common.restart:
         checkpoint = torch.load(
             '{}/{}/{}_checkpoint.pth'.format(
-                hydra.utils.get_original_cwd(),
+                cwd,
                 args.common.path2weight,
                 args.common.exp_name), map_location='cpu'
         )
@@ -139,7 +135,7 @@ def main(args):
         if is_best:
             print('Acc@1 best: {:6.2f}%'.format(best_acc))
             weight_name = '{}/{}/{}_mobilenetv2_best.pth'.format(
-                hydra.utils.get_original_cwd(),
+                cwd,
                 args.common.path2weight,
                 args.common.exp_name)
             torch.save(model_without_dp.cpu().state_dict(), weight_name)
@@ -153,7 +149,7 @@ def main(args):
             }
             torch.save(
                 checkpoint, '{}/{}/{}_checkpoint.pth'.format(
-                    hydra.utils.get_original_cwd(),
+                    cwd,
                     args.common.path2weight,
                     args.common.exp_name)
             )
