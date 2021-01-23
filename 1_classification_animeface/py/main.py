@@ -65,7 +65,7 @@ def load_data(args):
 @hydra.main(config_name='./../conf/config.yaml')
 def main(args):
     seed_everything(args.common.seed)  # 乱数テーブル固定
-    os.makedirs(args.common.path2weight, exist_ok=True)
+    os.makedirs(os.path.join(hydra.utils.get_original_cwd(), args.common.path2weight), exist_ok=True)
     writer = SummaryWriter(log_dir='{}/log/{}'.format(
         hydra.utils.get_original_cwd(),
         args.common.exp_name))  # tensorboard用のwriter作成
@@ -114,7 +114,10 @@ def main(args):
     # 学習再開時の設定
     if args.common.restart:
         checkpoint = torch.load(
-            'weight/{}_checkpoint.pth'.format(args.common.exp_name), map_location='cpu'
+            '{}/{}/{}_checkpoint.pth'.format(
+                hydra.utils.get_original_cwd(),
+                args.common.path2weight,
+                args.common.exp_name), map_location='cpu'
         )
         model_without_dp.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
@@ -135,7 +138,10 @@ def main(args):
         best_acc = max(acc, best_acc)
         if is_best:
             print('Acc@1 best: {:6.2f}%'.format(best_acc))
-            weight_name = '{}/{}_mobilenetv2_best.pth'.format(args.common.path2weight, args.common.exp_name)
+            weight_name = '{}/{}/{}_mobilenetv2_best.pth'.format(
+                hydra.utils.get_original_cwd(),
+                args.common.path2weight,
+                args.common.exp_name)
             torch.save(model_without_dp.cpu().state_dict(), weight_name)
             checkpoint = {
                 'model': model_without_dp.cpu().state_dict(),
@@ -146,7 +152,10 @@ def main(args):
                 'args': args
             }
             torch.save(
-                checkpoint, 'weight/{}_checkpoint.pth'.format(args.common.exp_name)
+                checkpoint, '{}/{}/{}_checkpoint.pth'.format(
+                    hydra.utils.get_original_cwd(),
+                    args.common.path2weight,
+                    args.common.exp_name)
             )
             model.to(device)
 

@@ -2,7 +2,7 @@ common:
   exp_name: animeface
   path2db: ./../datasets/animeface/data
   path2weight: weight
-  batch_size: 128
+  batch_size: 64
   start_epoch: 1
   epochs: 10
   evaluate: false
