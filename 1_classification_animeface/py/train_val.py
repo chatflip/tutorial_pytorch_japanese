@@ -65,9 +65,9 @@ def train(args, model, device, train_loader, writer, criterion,
         # print_freqごとに進行具合とloss表示
         if i % args.common.print_freq == 0:
             progress.display(i)
-            writer.add_scalars('loss', {'train': losses.val}, iteration)
-            writer.add_scalars('Acc@1', {'train': top1.val}, iteration)
-            writer.add_scalars('Acc@5', {'train': top5.val}, iteration)
+            writer.log_metric('train/loss', losses.val, step=iteration)
+            writer.log_metric('train/Acc1', top1.val.item(), step=iteration)
+            writer.log_metric('train/Acc5', top5.val.item(), step=iteration)
         iteration += 1
 
 
@@ -113,7 +113,7 @@ def validate(args, model, device, val_loader,
 
     # 精度等格納
     progress.display(i + 1)
-    writer.add_scalars('loss', {'val': losses.avg}, iteration)
-    writer.add_scalars('Acc@1', {'val': top1.avg}, iteration)
-    writer.add_scalars('Acc@5', {'val': top5.avg}, iteration)
+    writer.log_metric('val/loss', losses.avg, step=iteration)
+    writer.log_metric('val/Acc1', top1.avg.item(), step=iteration)
+    writer.log_metric('val/Acc5', top5.avg.item(), step=iteration)
     return top1.avg.item()

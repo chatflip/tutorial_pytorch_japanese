@@ -17,12 +17,13 @@ python py/setup.py
 # 学習，識別
 bash train.sh
 # ログ確認
-tensorboard --logdir=log/animeface
+cd outputs/{date}/{time}
+mlflow ui
 ```
 
 ## Results
 Top1 Accuracy 93.22% 
-elapsed time = 0h 3m 5s
+elapsed time = 0h 3m 13s
 
 
 ### 参考文献

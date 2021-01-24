@@ -13,11 +13,11 @@ from datasets import AnimeFaceDataset
 from model import mobilenet_v2
 from train_val import train, validate
 from utils import get_worker_init, seed_everything
-
-cwd = hydra.utils.get_original_cwd()
+from MlflowWriter import MlflowWriter
 
 
 def load_data(args):
+    cwd = hydra.utils.get_original_cwd()
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
@@ -62,9 +62,11 @@ def load_data(args):
 
 @hydra.main(config_name='./../config/config.yaml')
 def main(args):
+    cwd = hydra.utils.get_original_cwd()
     seed_everything(args.common.seed)  # 乱数テーブル固定
     os.makedirs(os.path.join(cwd, args.common.path2weight), exist_ok=True)
-    writer = SummaryWriter(log_dir='{}/log/{}'.format(cwd, args.common.exp_name))  # tensorboard用のwriter作成
+    writer = MlflowWriter(args.common.exp_name)
+    writer.log_params_from_omegaconf_dict(args)
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
     multigpu = torch.cuda.device_count() > 1  # グラボ2つ以上ならmultigpuにする
@@ -139,6 +141,7 @@ def main(args):
                 args.common.path2weight,
                 args.common.exp_name)
             torch.save(model_without_dp.cpu().state_dict(), weight_name)
+            writer.log_artifact(os.path.join(cwd, weight_name))
             checkpoint = {
                 'model': model_without_dp.cpu().state_dict(),
                 'optimizer': optimizer.state_dict(),
@@ -153,9 +156,20 @@ def main(args):
                     args.common.path2weight,
                     args.common.exp_name)
             )
+            writer.log_artifact(
+                '{}/{}/{}_checkpoint.pth'.format(
+                cwd,
+                args.common.path2weight,
+                args.common.exp_name))
+            writer.log_torch_model(model)
             model.to(device)
 
-    writer.close()  # tensorboard用のwriter閉じる
+    # Hydraの成果物をArtifactに保存
+    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/config.yaml'))
+    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/hydra.yaml'))
+    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/overrides.yaml'))
+    writer.log_artifact(os.path.join(os.getcwd(), 'main.log'))
+    writer.set_terminated()  # mlflow用のwriter閉じる
     # 実行時間表示
     endtime = time.time()
     interval = endtime - starttime
