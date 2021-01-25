@@ -32,7 +32,7 @@ Mac or Ubuntu
 conda create -n pt17 python=3.7 -y  
 source activate pt17  
 conda install pytorch=1.7.1 torchvision=0.8.2 cudatoolkit=11.0 -c pytorch -y
-pip install hydra-core==1.0.5 mlflow==1.13.1
+pip install hydra-core==1.0.5 mlflow==1.13.1 efficientnet-pytorch==0.7.0 albumentations==0.5.2
 ```
 
 ### 環境確認

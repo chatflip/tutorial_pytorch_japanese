@@ -2,6 +2,7 @@ common:
   exp_name: animeface
   path2db: ./../datasets/food-101
   path2weight: weight
+  arch: mobilenet_v2
   batch_size: 128
   start_epoch: 1
   epochs: 10

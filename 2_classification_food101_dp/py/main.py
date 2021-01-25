@@ -69,7 +69,7 @@ def main(args):
     cwd = hydra.utils.get_original_cwd()
     seed_everything(args.common.seed)  # 乱数テーブル固定
     os.makedirs(os.path.join(cwd, args.common.path2weight), exist_ok=True)
-    writer = MlflowWriter(args.common.exp_name)
+    writer = MlflowWriter('{}-{}'.format(args.common.exp_name, args.common.arch))
     writer.log_params_from_omegaconf_dict(args)
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
