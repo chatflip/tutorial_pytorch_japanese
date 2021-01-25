@@ -1,4 +1,5 @@
 # https://github.com/pytorch/vision/blob/v0.7.0/torchvision/models/mobilenet.py
+from torch.cuda.amp import autocast
 import torch.nn as nn
 
 try:
@@ -158,6 +159,7 @@ class MobileNetV2(nn.Module):
         x = self.classifier(x)
         return x
 
+    @autocast()
     def forward(self, x):
         return self._forward_impl(x)
 
