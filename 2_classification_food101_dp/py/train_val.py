@@ -63,7 +63,7 @@ def train(args, model, device, train_loader, writer, criterion,
         end = time.time()  # 基準の時間更新
 
         # print_freqごとに進行具合とloss表示
-        if i % args.common.print_freq == 0:
+        if i % args.print_freq == 0:
             progress.display(i)
             writer.log_metric('train/loss', losses.val, step=iteration)
             writer.log_metric('train/Acc1', top1.val.item(), step=iteration)
@@ -108,7 +108,7 @@ def validate(args, model, device, val_loader,
 
             batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
             end = time.time()  # 基準の時間更新
-            if i % args.common.print_freq == 0:
+            if i % args.print_freq == 0:
                 progress.display(i)
 
     # 精度等格納
