@@ -28,6 +28,8 @@ mlflow ui
 ## Results
 Acc@1 best:  81.11%
 elapsed time = 0h 14m 10s  
+elapsed time = 0h 28m 30s  
+
 
 ### 参考文献
 [1] http://www.foodspotting.com/  

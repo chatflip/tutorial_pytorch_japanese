@@ -2,11 +2,12 @@
 import os
 import time
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 import hydra
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import transforms
 
 from datasets import Food101Dataset
 from model import mobilenet_v2
@@ -17,22 +18,24 @@ from MlflowWriter import MlflowWriter
 
 def load_data(args):
     cwd = hydra.utils.get_original_cwd()
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+    normalize = A.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225],
+        max_pixel_value=255.0)
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
-    train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(args.preprocess.crop_size),  # リサイズ&クロップ
-        transforms.RandomHorizontalFlip(p=0.5),  # 左右反転
-        transforms.ToTensor(),  # テンソル化
-        normalize  # 標準化
+    train_transform = A.Compose([
+        A.RandomResizedCrop(args.preprocess.crop_size, args.preprocess.crop_size),
+        A.HorizontalFlip(),
+        normalize,
+        ToTensorV2(),
     ])
 
-    val_transform = transforms.Compose([
-        transforms.Resize(args.preprocess.image_size, interpolation=2),  # リサイズ
-        transforms.CenterCrop(args.preprocess.crop_size),
-        transforms.ToTensor(),  # テンソル化
-        normalize  # 標準化
+    val_transform = A.Compose([
+        A.Resize(args.preprocess.image_size, args.preprocess.image_size),
+        A.CenterCrop(args.preprocess.crop_size, args.preprocess.crop_size),
+        normalize,
+        ToTensorV2(),
     ])
 
     # AnimeFaceの学習用データ設定

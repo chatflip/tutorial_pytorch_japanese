@@ -2,8 +2,8 @@
 import json
 import os
 
+import cv2
 import numpy as np
-from PIL import Image
 from torch.utils.data import Dataset
 
 
@@ -27,10 +27,11 @@ class Food101Dataset(Dataset):
     # num_worker数で並列処理される関数
     def __getitem__(self, index):
         image_path = self.image_paths[index]
-        image = Image.open(image_path).convert('RGB')  # 画像をPILで開く
+        image = cv2.imread(image_path)  # 画像をPILで開く
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         if self.transform is not None:
-            image = self.transform(image)  # 画像変形適用
-        return image, self.image_labels[index]  # 画像とラベルを返す
+            augmented = self.transform(image=image)  # 画像変形適用
+        return augmented['image'], self.image_labels[index]  # 画像とラベルを返す
 
     # データセットの画像数宣言(これが無いとエラー)
     def __len__(self):
