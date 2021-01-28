@@ -27,8 +27,9 @@ mlflow ui
 
 ## Results
 Acc@1 best:  81.11%
-elapsed time = 0h 14m 10s  
-elapsed time = 0h 28m 30s  
+elapsed time = 0h 29m 2s(albumentations)  
+elapsed time = 0h 14m 30s(torchvision)  
+
 
 
 ### 参考文献
