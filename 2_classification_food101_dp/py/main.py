@@ -8,9 +8,11 @@ import hydra
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from efficientnet_pytorch import EfficientNet
 
 from datasets import Food101Dataset
-from model import mobilenet_v2
+from mobilenet_v2 import mobilenet_v2
+from resnet import resnet50
 from train_val import train, validate
 from utils import get_worker_init, seed_everything
 from MlflowWriter import MlflowWriter
@@ -22,18 +24,17 @@ def load_data(args):
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225],
         max_pixel_value=255.0)
-
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     train_transform = A.Compose([
-        A.RandomResizedCrop(args.crop_size, args.crop_size),
+        A.RandomResizedCrop(args.arch.crop_size, args.arch.crop_size),
         A.HorizontalFlip(),
         normalize,
         ToTensorV2(),
     ])
 
     val_transform = A.Compose([
-        A.Resize(args.image_size, args.image_size),
-        A.CenterCrop(args.crop_size, args.crop_size),
+        A.Resize(args.arch.image_size, args.arch.image_size),
+        A.CenterCrop(args.arch.crop_size, args.arch.crop_size),
         normalize,
         ToTensorV2(),
     ])
@@ -53,25 +54,26 @@ def load_data(args):
     )
 
     train_loader = torch.utils.data.DataLoader(
-        dataset=train_dataset, batch_size=args.batch_size,
+        dataset=train_dataset, batch_size=args.arch.batch_size,
         shuffle=True, num_workers=args.workers,
         pin_memory=True, drop_last=True,
         worker_init_fn=get_worker_init(args.seed))
 
     val_loader = torch.utils.data.DataLoader(
-        dataset=val_dataset, batch_size=args.batch_size,
+        dataset=val_dataset, batch_size=args.arch.batch_size,
         shuffle=False, num_workers=args.workers,
         pin_memory=True, drop_last=False,
         worker_init_fn=get_worker_init(args.seed))
     return train_loader, val_loader
 
 
-@hydra.main(config_name='./../config/config.yaml')
+@hydra.main(config_path="./../config", config_name="config")
 def main(args):
+    print(args)
     cwd = hydra.utils.get_original_cwd()
     seed_everything(args.seed)  # 乱数テーブル固定
     os.makedirs(os.path.join(cwd, args.path2weight), exist_ok=True)
-    writer = MlflowWriter('{}-{}'.format(args.exp_name, args.arch))
+    writer = MlflowWriter('{}-{}'.format(args.exp_name, args.arch.name))
     writer.log_params_from_omegaconf_dict(args)
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
@@ -79,14 +81,24 @@ def main(args):
 
     train_loader, val_loader = load_data(args)
 
-    model = mobilenet_v2(pretrained=True, num_classes=args.num_classes).to(device)
+    if args.arch.name == "mobilenet_v2":
+        model = mobilenet_v2(pretrained=True, num_classes=args.num_classes)
+    elif args.arch.name == "resnet50":
+        model = resnet50(pretrained=True)
+        in_channels = model.fc.in_features
+        model.fc = nn.Linear(in_channels, args.num_classes)
+    elif "efficientnet" in args.arch.name:
+        model = EfficientNet.from_pretrained(args.arch.name)
+        in_channels = model._fc.in_features
+        model._fc = nn.Linear(in_channels, args.num_classes)
+    model.to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
         model.parameters(),
-        lr=args.lr,
-        momentum=args.momentum,
-        weight_decay=args.weight_decay)  # 最適化方法定義
+        lr=args.arch.lr,
+        momentum=args.arch.momentum,
+        weight_decay=args.arch.weight_decay)  # 最適化方法定義
 
     iteration = 0  # 反復回数保存用
     # 評価だけやる
@@ -111,8 +123,8 @@ def main(args):
 
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=args.lr_step_size,
-        gamma=args.lr_gamma)  # 学習率の軽減スケジュール
+        step_size=args.arch.lr_step_size,
+        gamma=args.arch.lr_gamma)  # 学習率の軽減スケジュール
 
     best_acc = 0.0
     # 学習再開時の設定
