@@ -7,9 +7,7 @@ from torch.cuda.amp import autocast, GradScaler
 from utils import AverageMeter, ProgressMeter, accuracy
 
 
-def train(args, model, device, train_loader, writer, criterion,
-          optimizer, epoch, iteration, apex=False):
-
+def train(args, model, device, train_loader, writer, criterion, optimizer, epoch, iteration, apex=False):
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
@@ -63,7 +61,7 @@ def train(args, model, device, train_loader, writer, criterion,
         end = time.time()  # 基準の時間更新
 
         # print_freqごとに進行具合とloss表示
-        if i % args.common.print_freq == 0:
+        if i % args.print_freq == 0:
             progress.display(i)
             writer.log_metric('train/loss', losses.val, step=iteration)
             writer.log_metric('train/Acc1', top1.val.item(), step=iteration)
@@ -71,9 +69,7 @@ def train(args, model, device, train_loader, writer, criterion,
         iteration += 1
 
 
-def validate(args, model, device, val_loader,
-             criterion, writer, iteration):
-
+def validate(args, model, device, val_loader, criterion, writer, iteration):
     # ProgressMeter, AverageMeterの値初期化
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')

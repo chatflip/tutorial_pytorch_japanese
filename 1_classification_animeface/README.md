@@ -25,6 +25,5 @@ mlflow ui
 Top1 Accuracy 93.22% 
 elapsed time = 0h 3m 13s
 
-
 ### 参考文献
 [1] Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zhmoginov, Liang-Chieh Chen, "MobileNetV2: Inverted Residuals and Linear Bottlenecks," CVPR, 2018.  

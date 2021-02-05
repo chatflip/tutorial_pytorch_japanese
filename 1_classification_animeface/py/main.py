@@ -22,39 +22,39 @@ def load_data(args):
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     train_transform = transforms.Compose([
-        transforms.Resize(args.preprocess.image_size, interpolation=2),  # リサイズ
-        transforms.RandomCrop(args.preprocess.crop_size),  # クロップ
+        transforms.Resize(args.image_size, interpolation=2),  # リサイズ
+        transforms.RandomCrop(args.crop_size),  # クロップ
         transforms.RandomHorizontalFlip(p=0.5),  # 左右反転
         transforms.ToTensor(),  # テンソル化
         normalize  # 標準化
     ])
 
     val_transform = transforms.Compose([
-        transforms.Resize(args.preprocess.image_size, interpolation=2),  # リサイズ
-        transforms.CenterCrop(args.preprocess.crop_size),
+        transforms.Resize(args.image_size, interpolation=2),  # リサイズ
+        transforms.CenterCrop(args.crop_size),
         transforms.ToTensor(),  # テンソル化
         normalize  # 標準化
     ])
 
     # AnimeFaceの学習用データ設定
     train_dataset = AnimeFaceDataset(
-        os.path.join(cwd, args.common.path2db, 'train'),
+        os.path.join(cwd, args.path2db, 'train'),
         transform=train_transform)
     train_loader = torch.utils.data.DataLoader(
-        dataset=train_dataset, batch_size=args.common.batch_size,
-        shuffle=True, num_workers=args.common.workers,
+        dataset=train_dataset, batch_size=args.batch_size,
+        shuffle=True, num_workers=args.workers,
         pin_memory=True, drop_last=True,
-        worker_init_fn=get_worker_init(args.common.seed))
+        worker_init_fn=get_worker_init(args.seed))
 
     # AnimeFaceの評価用データ設定
     val_dataset = AnimeFaceDataset(
-        os.path.join(cwd, args.common.path2db, 'val'),
+        os.path.join(cwd, args.path2db, 'val'),
         transform=val_transform)
     val_loader = torch.utils.data.DataLoader(
-        dataset=val_dataset, batch_size=args.common.batch_size,
-        shuffle=False, num_workers=args.common.workers,
+        dataset=val_dataset, batch_size=args.batch_size,
+        shuffle=False, num_workers=args.workers,
         pin_memory=True, drop_last=False,
-        worker_init_fn=get_worker_init(args.common.seed))
+        worker_init_fn=get_worker_init(args.seed))
 
     return train_loader, val_loader
 
@@ -62,9 +62,9 @@ def load_data(args):
 @hydra.main(config_name='./../config/config.yaml')
 def main(args):
     cwd = hydra.utils.get_original_cwd()
-    seed_everything(args.common.seed)  # 乱数テーブル固定
-    os.makedirs(os.path.join(cwd, args.common.path2weight), exist_ok=True)
-    writer = MlflowWriter(args.common.exp_name)
+    seed_everything(args.seed)  # 乱数テーブル固定
+    os.makedirs(os.path.join(cwd, args.path2weight), exist_ok=True)
+    writer = MlflowWriter(args.exp_name)
     writer.log_params_from_omegaconf_dict(args)
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # cpuとgpu自動選択 (pytorch0.4.0以降の書き方)
@@ -72,7 +72,7 @@ def main(args):
 
     train_loader, val_loader = load_data(args)
 
-    model = mobilenet_v2(pretrained=True, num_classes=args.model.num_classes).to(device)
+    model = mobilenet_v2(pretrained=True, num_classes=args.num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
@@ -83,11 +83,11 @@ def main(args):
 
     iteration = 0  # 反復回数保存用
     # 評価だけやる
-    if args.common.evaluate:
+    if args.evaluate:
         weight_name = '{}/{}/{}_mobilenetv2_best.pth'.format(
             cwd,
-            args.common.path2weight,
-            args.common.exp_name)
+            args.path2weight,
+            args.exp_name)
         print("use pretrained model : {}".format(weight_name))
         param = torch.load(weight_name, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
@@ -109,12 +109,12 @@ def main(args):
 
     best_acc = 0.0
     # 学習再開時の設定
-    if args.common.restart:
+    if args.restart:
         checkpoint = torch.load(
             '{}/{}/{}_checkpoint.pth'.format(
                 cwd,
-                args.common.path2weight,
-                args.common.exp_name), map_location='cpu'
+                args.path2weight,
+                args.exp_name), map_location='cpu'
         )
         model_without_dp.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
@@ -125,9 +125,9 @@ def main(args):
 
     starttime = time.time()  # 実行時間計測(実時間)
     # 学習と評価
-    for epoch in range(args.common.start_epoch, args.common.epochs + 1):
+    for epoch in range(args.start_epoch, args.epochs + 1):
         train(args, model, device, train_loader, writer,
-              criterion, optimizer, epoch, iteration, args.common.apex)
+              criterion, optimizer, epoch, iteration, args.apex)
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
         acc = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
@@ -137,8 +137,8 @@ def main(args):
             print('Acc@1 best: {:6.2f}%'.format(best_acc))
             weight_name = '{}/{}/{}_mobilenetv2_best.pth'.format(
                 cwd,
-                args.common.path2weight,
-                args.common.exp_name)
+                args.path2weight,
+                args.exp_name)
             torch.save(model_without_dp.cpu().state_dict(), weight_name)
             writer.log_artifact(os.path.join(cwd, weight_name))
             checkpoint = {
@@ -152,14 +152,14 @@ def main(args):
             torch.save(
                 checkpoint, '{}/{}/{}_checkpoint.pth'.format(
                     cwd,
-                    args.common.path2weight,
-                    args.common.exp_name)
+                    args.path2weight,
+                    args.exp_name)
             )
             writer.log_artifact(
                 '{}/{}/{}_checkpoint.pth'.format(
                 cwd,
-                args.common.path2weight,
-                args.common.exp_name))
+                args.path2weight,
+                args.exp_name))
             writer.log_torch_model(model)
             model.to(device)
 
