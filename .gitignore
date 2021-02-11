@@ -134,3 +134,6 @@ dmypy.json
 # Specific folder
 /datasets/*
 /backup
+
+3_classification_food101_ddp
+4-quantize_classification
