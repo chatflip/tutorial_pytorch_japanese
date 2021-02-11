@@ -1,0 +1,3 @@
+backbone:
+  name: efficientnet-b3
+  batch_size: 4
