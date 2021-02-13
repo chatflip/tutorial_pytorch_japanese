@@ -19,6 +19,11 @@ bash train.sh
 # ログ確認
 cd outputs/{date}/{time}
 mlflow ui
+
+# 速度
+v4l2-ctl --list-formats-ext 
+# 学習モデルを使ってwebcam推論
+python py/demo_webcam.py
 ```
 
 ## Results
