@@ -100,20 +100,12 @@ def main(args):
     torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     train_loader, val_loader = load_data(args)
 
-    if args.arch == "Unet":
-        model = smp.Unet(
-            encoder_name=args.backbone.name,
-            encoder_weights="imagenet",
-            classes=args.num_classes,
-            activation="softmax2d",
-        )
-    elif args.arch == "DeepLabV3":
-        model = smp.DeepLabV3(
-            encoder_name=args.backbone.name,
-            encoder_weights="imagenet",
-            classes=args.num_classes,
-            activation="softmax2d",
-        )
+    model = getattr(smp, args.arch)(
+        encoder_name=args.backbone.name,
+        encoder_weights="imagenet",
+        classes=args.num_classes,
+        activation="softmax2d",
+    )
 
     loss = smp.utils.losses.DiceLoss()
     metrics = [

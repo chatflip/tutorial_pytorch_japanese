@@ -2,12 +2,12 @@ exp_name: voc2012
 path2db: ./../datasets/VOCdevkit/VOC2012
 path2weight: weight
 num_classes: 21
-image_height: 512
-image_width: 512
-lr: 0.0001
-epochs: 50
+image_height: 256
+image_width: 256
+lr: 0.001
+epochs: 100
 iou_threshold: 0.75
-workers: 16
+workers: 8
 seed: 1
 arch: Unet
 

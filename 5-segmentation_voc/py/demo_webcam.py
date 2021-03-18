@@ -15,8 +15,8 @@ def opt():
     parser.add_argument('--weight_path', type=str, default='weight/voc2012_Unet_efficientnet-b3_512_512.pth')
     parser.add_argument('--camera_height', type=int, default=720)
     parser.add_argument('--camera_width', type=int, default=1280)
-    parser.add_argument('--inference_height', type=int, default=512)
-    parser.add_argument('--inference_width', type=int, default=512)
+    parser.add_argument('--inference_height', type=int, default=256)
+    parser.add_argument('--inference_width', type=int, default=256)
     args = parser.parse_args()
     return args
 

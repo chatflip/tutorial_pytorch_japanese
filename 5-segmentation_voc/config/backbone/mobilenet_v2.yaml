@@ -1,3 +1,0 @@
-backbone:
-  name: mobilenet_v2
-  batch_size: 8
