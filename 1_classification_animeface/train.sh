@@ -1,3 +1,3 @@
 #!/bin/bash
-source activate pt17
+# poetry shell
 python py/main.py apex=true
