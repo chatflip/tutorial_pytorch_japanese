@@ -32,5 +32,4 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Lint with pysen
         run: |
-          poetry shell
           pysen run lint
