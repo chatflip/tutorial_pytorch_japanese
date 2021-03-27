@@ -32,20 +32,18 @@ Mac or Ubuntu
 実行時の環境は[ここ](https://repo.continuum.io/archive/) から```Anaconda3-5.2.0-MacOSX-x86_64.sh``` をダウンロード, インストール
 
 ### pytorch導入(仮想環境)
-``` 
-conda create -n pt17 python=3.7 -y  
-source activate pt17  
-conda install pytorch=1.7.1 torchvision=0.8.2 cudatoolkit=11.0 -c pytorch -y
-pip install hydra-core==1.0.5 mlflow==1.13.1 efficientnet-pytorch==0.7.0 albumentations==0.5.2 segmentation-models-pytorch==0.1.3
-
+``` bash
+conda create -n pt18 python=3.7 -y  
+source activate pt18  
+conda install pytorch=1.8.1 torchvision=0.9.1 cudatoolkit=10.2 -c pytorch -y
+pip install hydra-core==1.0.6 mlflow==1.15.0 efficientnet-pytorch==0.6.3 albumentations==0.5.2 segmentation-models-pytorch==0.1.3
 ```
 
 ### 環境確認
-```
-torch.cuda.is_available()
--> True
-torch.backends.cudnn.version()
--> 8005
-torch.distributed.is_nccl_available()
--> True
+```bash
+python
+import torch
+torch.cuda.is_available()  # True
+torch.backends.cudnn.version()  # 7605
+torch.distributed.is_nccl_available()  # True
 ```

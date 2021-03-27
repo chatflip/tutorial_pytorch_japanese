@@ -128,8 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm
-.idea
+# VS Code
+.vscode
 
 # Specific folder
 /datasets/*
