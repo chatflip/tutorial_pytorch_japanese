@@ -11,7 +11,7 @@
 
 ## Usage
 ### 実行
-```
+```bash 
 # ダウンロード，フォルダ構成
 python py/setup.py
 # 学習，識別
