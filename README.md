@@ -31,12 +31,12 @@ Mac or Ubuntu
 最新バージョンを使う場合[ここ](https://www.anaconda.com/distribution/)からダウンロード, インストール  
 実行時の環境は[ここ](https://repo.continuum.io/archive/) から```Anaconda3-5.2.0-MacOSX-x86_64.sh``` をダウンロード, インストール
 
-### pytorch導入(仮想環境)
+### 実行環境導入(仮想環境)
 ``` bash
-conda create -n pt18 python=3.7 -y  
-source activate pt18  
-conda install pytorch=1.8.1 torchvision=0.9.1 cudatoolkit=10.2 -c pytorch -y
-pip install hydra-core==1.0.6 mlflow==1.15.0 efficientnet-pytorch==0.6.3 albumentations==0.5.2 segmentation-models-pytorch==0.1.3
+pip install poetry
+# poetryの環境をディレクトリ内に作成
+poetry config virtualenvs.in-project true
+poetry install
 ```
 
 ### 環境確認
