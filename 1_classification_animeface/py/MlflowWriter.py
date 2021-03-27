@@ -9,7 +9,7 @@ class MlflowWriter:
         self.client = MlflowClient(**kwargs)
         try:
             self.experiment_id = self.client.create_experiment(experiment_name)
-        except:
+        except Exception:
             self.experiment_id = self.client.get_experiment_by_name(
                 experiment_name
             ).experiment_id
