@@ -6,11 +6,7 @@ env:
   python-version: 3.7
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        python-version: [3.7]
-
+  lint:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ env.python-version }}
