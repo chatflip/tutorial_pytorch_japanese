@@ -32,4 +32,5 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Lint with pysen
         run: |
+          source .venv/bin/activate
           pysen run lint
