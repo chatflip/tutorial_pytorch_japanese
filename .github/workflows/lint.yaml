@@ -21,4 +21,5 @@ jobs:
           poetry install
       - name: Lint with pysen
         run: |
+          poetry shell
           pysen run lint
