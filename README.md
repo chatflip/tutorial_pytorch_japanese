@@ -27,10 +27,6 @@ pytorch tutorial for japanese
 Mac or Ubuntu
 
 ## Installation
-### anaconda導入
-最新バージョンを使う場合[ここ](https://www.anaconda.com/distribution/)からダウンロード, インストール  
-実行時の環境は[ここ](https://repo.continuum.io/archive/) から```Anaconda3-5.2.0-MacOSX-x86_64.sh``` をダウンロード, インストール
-
 ### 実行環境導入(仮想環境)
 ``` bash
 pip install poetry
@@ -46,4 +42,10 @@ import torch
 torch.cuda.is_available()  # True
 torch.backends.cudnn.version()  # 7605
 torch.distributed.is_nccl_available()  # True
+```
+
+## Lint
+```bash
+pysen run lint
+pysen run format
 ```
