@@ -5,7 +5,7 @@ num_classes: 21
 image_height: 256
 image_width: 256
 lr: 0.001
-epochs: 100
+epochs: 200
 iou_threshold: 0.75
 workers: 8
 seed: 1
