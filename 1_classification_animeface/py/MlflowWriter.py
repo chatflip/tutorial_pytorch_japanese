@@ -10,7 +10,9 @@ class MlflowWriter:
         try:
             self.experiment_id = self.client.create_experiment(experiment_name)
         except:
-            self.experiment_id = self.client.get_experiment_by_name(experiment_name).experiment_id
+            self.experiment_id = self.client.get_experiment_by_name(
+                experiment_name
+            ).experiment_id
 
         self.run_id = self.client.create_run(self.experiment_id).info.run_id
 
@@ -22,16 +24,16 @@ class MlflowWriter:
         if isinstance(element, DictConfig):
             for k, v in element.items():
                 if isinstance(v, DictConfig) or isinstance(v, ListConfig):
-                    self._explore_recursive(f'{parent_name}.{k}', v)
+                    self._explore_recursive(f"{parent_name}.{k}", v)
                 else:
-                    self.client.log_param(self.run_id, f'{parent_name}.{k}', v)
+                    self.client.log_param(self.run_id, f"{parent_name}.{k}", v)
         elif isinstance(element, ListConfig):
             for i, v in enumerate(element):
-                self.client.log_param(self.run_id, f'{parent_name}.{i}', v)
+                self.client.log_param(self.run_id, f"{parent_name}.{i}", v)
 
     def log_torch_model(self, model):
         with mlflow.start_run(self.run_id):
-            pytorch.log_model(model, 'models')
+            pytorch.log_model(model, "models")
 
     def log_param(self, key, value):
         self.client.log_param(self.run_id, key, value)
