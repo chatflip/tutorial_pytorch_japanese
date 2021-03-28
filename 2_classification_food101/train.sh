@@ -1,9 +1,4 @@
 #!/bin/bash
 # poetry shell
-# mixed precision training実行
-#python py/main.py apex=true
-python py/main.py
-#python py/main.py apex=true arch=resnet50
-# python resnet50 --apex
-# python mobilenetv2 --apex
-# python efficienetnetb~
+python py/main.py -m apex=true arch=mobilenet_v2,resnet50
+#python py/main.py -m arch=resnet50 arch=efficientnet_b0,efficientnet_b1
