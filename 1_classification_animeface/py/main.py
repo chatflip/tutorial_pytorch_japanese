@@ -34,8 +34,7 @@ def load_data(args):
 
     val_transform = transforms.Compose(
         [
-            # リサイズ
-            transforms.Resize(args.image_size, InterpolationMode.BILINEAR),
+            transforms.Resize(args.image_size, InterpolationMode.BILINEAR),  # リサイズ
             transforms.CenterCrop(args.crop_size),
             transforms.ToTensor(),  # テンソル化
             normalize,  # 標準化
