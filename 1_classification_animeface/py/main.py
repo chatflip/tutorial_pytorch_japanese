@@ -179,7 +179,6 @@ def main(args):
             writer.log_artifact(
                 "{}/{}/{}_checkpoint.pth".format(cwd, args.path2weight, args.exp_name)
             )
-            writer.log_torch_model(model)
             model.to(device)
 
     # Hydraの成果物をArtifactに保存
@@ -187,6 +186,10 @@ def main(args):
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
     writer.set_terminated()  # mlflow用のwriter閉じる
+
+    writer.set_terminated()
+    writer.move_mlruns()  # 実験のログをコピー
+
     # 実行時間表示
     endtime = time.time()
     interval = endtime - starttime
