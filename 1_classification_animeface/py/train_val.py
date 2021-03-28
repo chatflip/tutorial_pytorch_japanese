@@ -116,7 +116,7 @@ def validate(args, model, device, val_loader, criterion, writer, iteration):
 
             batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
             end = time.time()  # 基準の時間更新
-            if i % args.common.print_freq == 0:
+            if i % args.print_freq == 0:
                 progress.display(i)
 
     # 精度等格納

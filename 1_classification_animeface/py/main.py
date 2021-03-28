@@ -79,6 +79,8 @@ def main(args):
     os.makedirs(os.path.join(cwd, args.path2weight), exist_ok=True)
     writer = MlflowWriter(args.exp_name)
     writer.log_params_from_omegaconf_dict(args)
+    for key in args:
+        writer.log_param(key, args[key])
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device(
         "cuda" if torch.cuda.is_available() else "cpu"
@@ -184,7 +186,6 @@ def main(args):
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
-    writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
     writer.set_terminated()  # mlflow用のwriter閉じる
     # 実行時間表示
     endtime = time.time()
