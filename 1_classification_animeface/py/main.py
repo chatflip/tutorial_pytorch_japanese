@@ -24,8 +24,7 @@ def load_data(args):
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
     train_transform = transforms.Compose(
         [
-            transforms.Resize(
-                args.image_size, InterpolationMode.BILINEAR),  # リサイズ
+            transforms.Resize(args.image_size, InterpolationMode.BILINEAR),  # リサイズ
             transforms.RandomCrop(args.crop_size),  # クロップ
             transforms.RandomHorizontalFlip(p=0.5),  # 左右反転
             transforms.ToTensor(),  # テンソル化
@@ -36,8 +35,7 @@ def load_data(args):
     val_transform = transforms.Compose(
         [
             # リサイズ
-            transforms.Resize(
-                args.image_size, InterpolationMode.BILINEAR),
+            transforms.Resize(args.image_size, InterpolationMode.BILINEAR),
             transforms.CenterCrop(args.crop_size),
             transforms.ToTensor(),  # テンソル化
             normalize,  # 標準化
@@ -90,8 +88,7 @@ def main(args):
 
     train_loader, val_loader = load_data(args)
 
-    model = mobilenet_v2(
-        pretrained=True, num_classes=args.num_classes).to(device)
+    model = mobilenet_v2(pretrained=True, num_classes=args.num_classes).to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(
@@ -108,8 +105,7 @@ def main(args):
             cwd, args.path2weight, args.exp_name
         )
         print("use pretrained model : {}".format(weight_name))
-        param = torch.load(
-            weight_name, map_location=lambda storage, loc: storage)
+        param = torch.load(weight_name, map_location=lambda storage, loc: storage)
         model.load_state_dict(param)
         if multigpu:
             model = nn.DataParallel(model)
@@ -130,8 +126,7 @@ def main(args):
     # 学習再開時の設定
     if args.restart:
         checkpoint = torch.load(
-            "{}/{}/{}_checkpoint.pth".format(
-                cwd, args.path2weight, args.exp_name),
+            "{}/{}/{}_checkpoint.pth".format(cwd, args.path2weight, args.exp_name),
             map_location="cpu",
         )
         model_without_dp.load_state_dict(checkpoint["model"])
@@ -157,8 +152,7 @@ def main(args):
             args.apex,
         )
         iteration += len(train_loader)  # 1epoch終わった時のiterationを足す
-        acc = validate(
-            args, model, device, val_loader, criterion, writer, iteration)
+        acc = validate(args, model, device, val_loader, criterion, writer, iteration)
         scheduler.step()  # 学習率のスケジューリング更新
         is_best = acc > best_acc
         best_acc = max(acc, best_acc)
@@ -179,12 +173,10 @@ def main(args):
             }
             torch.save(
                 checkpoint,
-                "{}/{}/{}_checkpoint.pth".format(
-                    cwd, args.path2weight, args.exp_name),
+                "{}/{}/{}_checkpoint.pth".format(cwd, args.path2weight, args.exp_name),
             )
             writer.log_artifact(
-                "{}/{}/{}_checkpoint.pth".format(
-                    cwd, args.path2weight, args.exp_name)
+                "{}/{}/{}_checkpoint.pth".format(cwd, args.path2weight, args.exp_name)
             )
             writer.log_torch_model(model)
             model.to(device)
