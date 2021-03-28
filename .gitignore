@@ -137,3 +137,6 @@ dmypy.json
 
 3_classification_food101_ddp
 4-quantize_classification
+
+# mlflow 
+mlruns
