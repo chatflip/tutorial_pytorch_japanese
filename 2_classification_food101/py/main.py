@@ -199,6 +199,7 @@ def main(args):
     writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
     writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
     writer.set_terminated()  # mlflow用のwriter閉じる
+    writer.move_mlruns()
     # 実行時間表示
     endtime = time.time()
     interval = endtime - starttime
