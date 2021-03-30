@@ -82,6 +82,8 @@ def main(args):
     seed_everything(args.seed)  # 乱数テーブル固定
     os.makedirs(os.path.join(cwd, args.path2weight), exist_ok=True)
     writer = MlflowWriter("{}-{}".format(args.exp_name, args.arch.name))
+    for key in args:
+        writer.log_param(key, args[key])
     writer.log_params_from_omegaconf_dict(args)
     # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     device = torch.device(
@@ -95,6 +97,10 @@ def main(args):
         model = mobilenet_v2(pretrained=True, num_classes=args.num_classes)
     elif args.arch.name == "resnet50":
         model = resnet50(pretrained=True)
+        in_channels = model.fc.in_features
+        model.fc = nn.Linear(in_channels, args.num_classes)
+    elif args.arch.name == "resnet101":
+        model = resnet101(pretrained=True)
         in_channels = model.fc.in_features
         model.fc = nn.Linear(in_channels, args.num_classes)
     elif "efficientnet" in args.arch.name:
@@ -190,7 +196,6 @@ def main(args):
             writer.log_artifact(
                 "{}/{}/{}_checkpoint.pth".format(cwd, args.path2weight, args.exp_name)
             )
-            writer.log_torch_model(model)
             model.to(device)
 
     # Hydraの成果物をArtifactに保存
