@@ -1,14 +1,14 @@
-exp_name: animeface
+exp_name: food-101
 path2db: ./../datasets/food-101
 path2weight: weight
 num_classes: 101
 start_epoch: 1
-epochs: 10
+epochs: 5
 evaluate: false
 restart: false
 workers: 16
 seed: 1
-print_freq: 10
+print_freq: 100
 apex: false
 apex_opt_level: O1
 
