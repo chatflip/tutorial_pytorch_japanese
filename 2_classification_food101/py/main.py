@@ -12,7 +12,7 @@ from datasets import Food101Dataset
 from efficientnet_pytorch import EfficientNet
 from MlflowWriter import MlflowWriter
 from mobilenet_v2 import mobilenet_v2
-from resnet import resnet50
+from resnet import resnet50, resnet101
 from train_val import train, validate
 from utils import get_worker_init, seed_everything
 
