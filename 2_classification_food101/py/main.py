@@ -110,11 +110,9 @@ def main(args):
     model.to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = optim.SGD(
+    optimizer = optim.Adam(
         model.parameters(),
-        lr=args.arch.lr,
-        momentum=args.arch.momentum,
-        weight_decay=args.arch.weight_decay,
+        lr=args.arch.max_lr,
     )  # 最適化方法定義
 
     iteration = 0  # 反復回数保存用
@@ -137,8 +135,8 @@ def main(args):
         model = nn.DataParallel(model)
         model_without_dp = model.module
 
-    scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size=args.arch.lr_step_size, gamma=args.arch.lr_gamma
+    scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+        optimizer, T_0=len(train_loader), T_mult=1, eta_min=args.arch.min_lr, last_epoch=-1
     )  # 学習率の軽減スケジュール
 
     best_acc = 0.0
@@ -166,6 +164,7 @@ def main(args):
             writer,
             criterion,
             optimizer,
+            scheduler,
             epoch,
             iteration,
             args.apex,
