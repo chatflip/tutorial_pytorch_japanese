@@ -110,7 +110,7 @@ def main(args):
     model.to(device)
 
     criterion = nn.CrossEntropyLoss().to(device)
-    optimizer = optim.Adam(
+    optimizer = optim.AdamW(
         model.parameters(),
         lr=args.arch.max_lr,
     )  # 最適化方法定義
