@@ -69,7 +69,7 @@ def train(
         else:
             loss.backward()
             optimizer.step()  # パラメータ更新
-        scheduler.step();
+        scheduler.step()
         batch_time.update(time.time() - end)  # 画像ロードからパラメータ更新にかかった時間記録
         end = time.time()  # 基準の時間更新
 

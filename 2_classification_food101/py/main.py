@@ -136,7 +136,11 @@ def main(args):
         model_without_dp = model.module
 
     scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
-        optimizer, T_0=len(train_loader), T_mult=1, eta_min=args.arch.min_lr, last_epoch=-1
+        optimizer,
+        T_0=len(train_loader),
+        T_mult=1,
+        eta_min=args.arch.min_lr,
+        last_epoch=-1,
     )  # 学習率の軽減スケジュール
 
     best_acc = 0.0
