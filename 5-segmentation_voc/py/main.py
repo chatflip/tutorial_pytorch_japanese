@@ -3,60 +3,79 @@ import os
 import time
 
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
 import hydra
-import torch
 import segmentation_models_pytorch as smp
-
-
+import torch
+from albumentations.pytorch import ToTensorV2
 from datasets import VOCSegmentation2012
-from utils import get_worker_init, seed_everything
 from MlflowWriter import MlflowWriter
+from utils import get_worker_init, seed_everything
 
 
 def load_data(args):
     cwd = hydra.utils.get_original_cwd()
     normalize = A.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225],
-        max_pixel_value=255.0)
+        mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225], max_pixel_value=255.0
+    )
 
     # 画像開いたところからtensorでNNに使えるようにするまでの変形
-    train_transform = A.Compose([
-        A.HorizontalFlip(p=0.5),
-        A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
-        A.PadIfNeeded(min_height=args.image_height, min_width=args.image_width, always_apply=True, border_mode=0),
-        A.RandomCrop(height=args.image_height, width=args.image_width, always_apply=True),
-        A.IAAAdditiveGaussianNoise(p=0.2),
-        A.IAAPerspective(p=0.5),
-        A.OneOf([
-            A.CLAHE(p=1),
-            A.RandomBrightnessContrast(contrast_limit=0.0, p=1),
-            A.RandomGamma(p=1),
-        ], p=0.9),
-        A.OneOf([
-            A.IAASharpen(p=1),
-            A.Blur(blur_limit=3, p=1),
-            A.MotionBlur(blur_limit=3, p=1),
-        ], p=0.9),
-        A.OneOf([
-            A.RandomBrightnessContrast(brightness_limit=0.0, p=1),
-            A.HueSaturationValue(p=1),
-        ], p=0.9),
-        normalize,
-        ToTensorV2(),
-    ])
+    train_transform = A.Compose(
+        [
+            A.HorizontalFlip(p=0.5),
+            A.ShiftScaleRotate(
+                scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0
+            ),
+            A.PadIfNeeded(
+                min_height=args.image_height,
+                min_width=args.image_width,
+                always_apply=True,
+                border_mode=0,
+            ),
+            A.RandomCrop(
+                height=args.image_height, width=args.image_width, always_apply=True
+            ),
+            A.IAAAdditiveGaussianNoise(p=0.2),
+            A.IAAPerspective(p=0.5),
+            A.OneOf(
+                [
+                    A.CLAHE(p=1),
+                    A.RandomBrightnessContrast(contrast_limit=0.0, p=1),
+                    A.RandomGamma(p=1),
+                ],
+                p=0.9,
+            ),
+            A.OneOf(
+                [
+                    A.IAASharpen(p=1),
+                    A.Blur(blur_limit=3, p=1),
+                    A.MotionBlur(blur_limit=3, p=1),
+                ],
+                p=0.9,
+            ),
+            A.OneOf(
+                [
+                    A.RandomBrightnessContrast(brightness_limit=0.0, p=1),
+                    A.HueSaturationValue(p=1),
+                ],
+                p=0.9,
+            ),
+            normalize,
+            ToTensorV2(),
+        ]
+    )
 
-    val_transform = A.Compose([
-        A.Resize(args.image_height, args.image_width),
-        normalize,
-        ToTensorV2(),
-    ])
+    val_transform = A.Compose(
+        [
+            A.Resize(args.image_height, args.image_width),
+            normalize,
+            ToTensorV2(),
+        ]
+    )
 
     # VOCSegmentation2012の学習用データ設定
     train_dataset = VOCSegmentation2012(
         os.path.join(cwd, args.path2db),
-        'train',
+        "train",
         args.num_classes,
         transform=train_transform,
     )
@@ -64,22 +83,30 @@ def load_data(args):
     # VOCSegmentation2012の評価用データ設定
     val_dataset = VOCSegmentation2012(
         os.path.join(cwd, args.path2db),
-        'val',
+        "val",
         args.num_classes,
-        transform=val_transform
+        transform=val_transform,
     )
 
     train_loader = torch.utils.data.DataLoader(
-        dataset=train_dataset, batch_size=args.backbone.batch_size,
-        shuffle=True, num_workers=args.workers,
-        pin_memory=True, drop_last=True,
-        worker_init_fn=get_worker_init(args.seed))
+        dataset=train_dataset,
+        batch_size=args.backbone.batch_size,
+        shuffle=True,
+        num_workers=args.workers,
+        pin_memory=True,
+        drop_last=True,
+        worker_init_fn=get_worker_init(args.seed),
+    )
 
     val_loader = torch.utils.data.DataLoader(
-        dataset=val_dataset, batch_size=args.backbone.batch_size,
-        shuffle=False, num_workers=args.workers,
-        pin_memory=True, drop_last=False,
-        worker_init_fn=get_worker_init(args.seed))
+        dataset=val_dataset,
+        batch_size=args.backbone.batch_size,
+        shuffle=False,
+        num_workers=args.workers,
+        pin_memory=True,
+        drop_last=False,
+        worker_init_fn=get_worker_init(args.seed),
+    )
     return train_loader, val_loader
 
 
@@ -112,9 +139,11 @@ def main(args):
         smp.utils.metrics.IoU(threshold=args.iou_threshold),
     ]
 
-    optimizer = torch.optim.Adam([
-        dict(params=model.parameters(), lr=args.lr),
-    ])
+    optimizer = torch.optim.Adam(
+        [
+            dict(params=model.parameters(), lr=args.lr),
+        ]
+    )
 
     train_epoch = smp.utils.train.TrainEpoch(
         model,
@@ -137,15 +166,15 @@ def main(args):
     max_score = 0
     # 学習と評価
     for epoch in range(1, args.epochs + 1):
-        print('\nEpoch: {}'.format(epoch))
+        print("\nEpoch: {}".format(epoch))
         train_logs = train_epoch.run(train_loader)
         writer = write_learning_log(writer, train_logs, epoch, "train")
         valid_logs = valid_epoch.run(val_loader)
         writer = write_learning_log(writer, valid_logs, epoch, "val")
 
         # do something (save model, change lr, etc.)
-        if max_score < valid_logs['iou_score']:
-            max_score = valid_logs['iou_score']
+        if max_score < valid_logs["iou_score"]:
+            max_score = valid_logs["iou_score"]
             weight_path = "{}/{}/{}_{}_{}_{}_{}.pth".format(
                 cwd,
                 args.path2weight,
@@ -156,11 +185,11 @@ def main(args):
                 args.image_width,
             )
             torch.save(model, weight_path)
-            print('Model saved!')
+            print("Model saved!")
 
         if epoch == 25:
-            optimizer.param_groups[0]['lr'] = args.lr / 10
-            print('Decrease decoder learning rate to 1e-5!')
+            optimizer.param_groups[0]["lr"] = args.lr / 10
+            print("Decrease decoder learning rate to 1e-5!")
 
     best_model = torch.load(weight_path)
     test_epoch = smp.utils.train.ValidEpoch(
@@ -175,20 +204,23 @@ def main(args):
 
     # Hydraの成果物をArtifactに保存
     writer.log_artifact(weight_path)
-    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/config.yaml'))
-    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/hydra.yaml'))
-    writer.log_artifact(os.path.join(os.getcwd(), '.hydra/overrides.yaml'))
-    writer.log_artifact(os.path.join(os.getcwd(), 'main.log'))
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
+    writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
     writer.set_terminated()  # mlflow用のwriter閉じる
 
     # 実行時間表示
     endtime = time.time()
     interval = endtime - starttime
-    print('elapsed time = {0:d}h {1:d}m {2:d}s'.format(
-        int(interval / 3600),
-        int((interval % 3600) / 60),
-        int((interval % 3600) % 60)))
+    print(
+        "elapsed time = {0:d}h {1:d}m {2:d}s".format(
+            int(interval / 3600),
+            int((interval % 3600) / 60),
+            int((interval % 3600) % 60),
+        )
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

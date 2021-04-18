@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 import os
 
 import cv2
-import torch
 import pandas as pd
+import torch
 from torch.utils.data import Dataset
 
 
@@ -15,7 +14,9 @@ class VOCSegmentation2012(Dataset):
         self.image_paths = []  # 画像のパス格納用
         self.mask_paths = []  # 画像のラベル格納用
         self.num_classes = num_classes
-        image_list_path = os.path.join(root, "ImageSets", "Segmentation", f"{phase}.txt")
+        image_list_path = os.path.join(
+            root, "ImageSets", "Segmentation", f"{phase}.txt"
+        )
         image_lists = pd.read_table(image_list_path, header=None)
 
         for _, image_list in image_lists.iterrows():
@@ -31,7 +32,7 @@ class VOCSegmentation2012(Dataset):
         mask = cv2.imread(self.mask_paths[index], 0)
         if self.transform is not None:
             augmented = self.transform(image=image, mask=mask)  # 画像変形適用
-        image, mask = augmented['image'], augmented['mask']
+        image, mask = augmented["image"], augmented["mask"]
         height, width = mask.shape
         binary_mask = torch.zeros(self.num_classes, height, width)
         for i in range(self.num_classes):
