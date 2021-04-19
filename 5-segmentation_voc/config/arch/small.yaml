@@ -1,0 +1,6 @@
+# @package _group_
+encoder: timm-efficientnet-b0
+decoder: DeepLabV3Plus
+image_height: 256
+image_width: 256
+batch_size: 32

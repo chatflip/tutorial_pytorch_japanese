@@ -26,13 +26,15 @@ def load_data(args):
                 scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0
             ),
             A.PadIfNeeded(
-                min_height=args.image_height,
-                min_width=args.image_width,
+                min_height=args.arch.image_height,
+                min_width=args.arch.image_width,
                 always_apply=True,
                 border_mode=0,
             ),
             A.RandomCrop(
-                height=args.image_height, width=args.image_width, always_apply=True
+                height=args.arch.image_height,
+                width=args.arch.image_width,
+                always_apply=True,
             ),
             A.IAAAdditiveGaussianNoise(p=0.2),
             A.IAAPerspective(p=0.5),
@@ -66,7 +68,7 @@ def load_data(args):
 
     val_transform = A.Compose(
         [
-            A.Resize(args.image_height, args.image_width),
+            A.Resize(args.arch.image_height, args.arch.image_width),
             normalize,
             ToTensorV2(),
         ]
@@ -90,9 +92,9 @@ def load_data(args):
 
     train_loader = torch.utils.data.DataLoader(
         dataset=train_dataset,
-        batch_size=args.backbone.batch_size,
+        batch_size=args.arch.batch_size,
         shuffle=True,
-        num_workers=args.workers,
+        num_workers=os.cpu_count(),
         pin_memory=True,
         drop_last=True,
         worker_init_fn=get_worker_init(args.seed),
@@ -100,9 +102,9 @@ def load_data(args):
 
     val_loader = torch.utils.data.DataLoader(
         dataset=val_dataset,
-        batch_size=args.backbone.batch_size,
+        batch_size=args.arch.batch_size,
         shuffle=False,
-        num_workers=args.workers,
+        num_workers=os.cpu_count(),
         pin_memory=True,
         drop_last=False,
         worker_init_fn=get_worker_init(args.seed),
@@ -116,6 +118,16 @@ def write_learning_log(writer, logs, epoch, phase):
     return writer
 
 
+def write_base_log(args, writer):
+    for key in args:
+        writer.log_param(key, args[key])
+    writer.log_params_from_omegaconf_dict(args)
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
+    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
+    return writer
+
+
 @hydra.main(config_path="./../config", config_name="config")
 def main(args):
     print(args)
@@ -123,12 +135,12 @@ def main(args):
     seed_everything(args.seed)  # 乱数テーブル固定
     os.makedirs(os.path.join(cwd, args.path2weight), exist_ok=True)
     writer = MlflowWriter(args.exp_name)
-    writer.log_params_from_omegaconf_dict(args)
-    torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
+    writer = write_base_log(args, writer)
+    # torch.backends.cudnn.benchmark = True  # 再現性を無くして高速化
     train_loader, val_loader = load_data(args)
 
-    model = getattr(smp, args.arch)(
-        encoder_name=args.backbone.name,
+    model = getattr(smp, args.arch.decoder)(
+        encoder_name=args.arch.encoder,
         encoder_weights="imagenet",
         classes=args.num_classes,
         activation="softmax2d",
@@ -175,14 +187,14 @@ def main(args):
         # do something (save model, change lr, etc.)
         if max_score < valid_logs["iou_score"]:
             max_score = valid_logs["iou_score"]
-            weight_path = "{}/{}/{}_{}_{}_{}_{}.pth".format(
+            weight_path = "{}/{}/{}_{}_{}_H{}_W{}.pth".format(
                 cwd,
                 args.path2weight,
                 args.exp_name,
-                args.arch,
-                args.backbone.name,
-                args.image_height,
-                args.image_width,
+                args.arch.decoder,
+                args.arch.encoder,
+                args.arch.image_height,
+                args.arch.image_width,
             )
             torch.save(model, weight_path)
             print("Model saved!")
@@ -202,13 +214,9 @@ def main(args):
     logs = test_epoch.run(val_loader)
     print(f"best epoch iou_score: {logs['iou_score']}")
 
-    # Hydraの成果物をArtifactに保存
     writer.log_artifact(weight_path)
-    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
-    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
-    writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
-    writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
     writer.set_terminated()  # mlflow用のwriter閉じる
+    writer.move_mlruns()  # 結果を一覧で見れるようにコピー
 
     # 実行時間表示
     endtime = time.time()
